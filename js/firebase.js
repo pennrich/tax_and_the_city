@@ -3,7 +3,7 @@
 import { firebaseConfig } from "./config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 import {
-  getAuth, GoogleAuthProvider, signInWithPopup, signInWithCredential, signInAnonymously, onAuthStateChanged, signOut, connectAuthEmulator,
+  getAuth, GoogleAuthProvider, signInWithPopup, signInWithCredential, signInAnonymously, setPersistence, browserSessionPersistence, onAuthStateChanged, signOut, connectAuthEmulator,
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 import { getDatabase, ref, onValue, connectDatabaseEmulator } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-database.js";
 
@@ -13,7 +13,7 @@ export {
 
 const useEmulator = new URLSearchParams(location.search).get("emu") === "1";
 const config = useEmulator
-  ? { apiKey: "demo", projectId: "demo-tax-quiz", databaseURL: "http://127.0.0.1:9000?ns=demo-tax-quiz", appId: "demo" }
+  ? { apiKey: "demo", projectId: "demo-tax-quiz", databaseURL: "http://127.0.0.1:9000?ns=demo-tax-quiz-default-rtdb", appId: "demo" }
   : firebaseConfig;
 
 export const isConfigured = Boolean(config.apiKey && config.databaseURL);
@@ -23,6 +23,8 @@ export const auth = app ? getAuth(app) : null;
 export const db = app ? getDatabase(app) : null;
 
 if (useEmulator && app) {
+  // 에뮬레이터에서는 탭마다 다른 사용자 (한 컴퓨터에서 학생 여러 명 흉내)
+  setPersistence(auth, browserSessionPersistence);
   connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
   connectDatabaseEmulator(db, "127.0.0.1", 9000);
 }

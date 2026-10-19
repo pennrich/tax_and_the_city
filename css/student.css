@@ -1,0 +1,41 @@
+/* 학생 태블릿: 큰 버튼, 상태를 화면 전체 색으로 알려 준다. */
+body.student { min-height: 100vh; transition: background .3s; }
+body[data-mood="wait"] { background: var(--night); }
+body[data-mood="question"] { background: #12306b; }
+body[data-mood="done"] { background: #0f5132; }
+body[data-mood="good"] { background: var(--money-dark); }
+body[data-mood="bad"] { background: var(--tax-dark); }
+body[data-mood="rest"] { background: #3b3f4f; }
+
+main { padding: 20px 16px 40px; max-width: 1100px; margin: 0 auto; }
+.screen { display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center; }
+.screen h1 { font-size: clamp(30px, 5vw, 52px); margin: 8px 0 0; color: var(--taxi); }
+.screen h2 { font-size: clamp(24px, 4vw, 38px); margin: 0; }
+.screen p { font-size: clamp(18px, 2.6vw, 24px); margin: 0; }
+.hint { color: #c9cfdf; }
+
+.choices-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; width: 100%; }
+.choices-grid button { min-height: 80px; font-size: clamp(20px, 3vw, 28px); }
+.choices-grid button.taken { background: #555b6e; color: #aab; box-shadow: none; }
+
+.code-entry { display: flex; gap: 10px; }
+.code-entry input { font-size: 32px; width: 220px; text-align: center; letter-spacing: 6px; text-transform: uppercase; }
+
+/* 상단 고정 바: 우리 팀 아바타·팀명·잔액 */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 14px; padding: 8px 16px;
+  background: rgba(10, 12, 24, .85); backdrop-filter: blur(4px);
+}
+.topbar .tb-team { font-family: var(--display); font-size: clamp(22px, 3.4vw, 32px); color: var(--taxi); }
+.topbar .tb-name { font-size: 16px; color: #c9cfdf; }
+.topbar .tb-money { margin-left: auto; font-size: clamp(24px, 4vw, 40px); font-weight: 900; padding: 4px 16px; border-radius: 12px; background: var(--money-dark); }
+.topbar .tb-money.debt { background: var(--tax); color: #fff; }
+
+/* 아바타 고르기 */
+.avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; width: 100%; }
+.avatar-pick { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px; min-height: 0; background: var(--night-2); color: #fff; box-shadow: none; border: 3px solid transparent; font-size: 15px; }
+.avatar-pick.mine { border-color: var(--taxi); background: #3a3410; }
+.avatar-pick.locked { opacity: .35; filter: grayscale(1); }
+.avatar-pick .lock { font-size: 13px; color: var(--warn); }
+.big-avatar svg { width: min(240px, 50vw); height: auto; }
