@@ -6,6 +6,7 @@ import { assignPieces, isCoopCorrect } from "./coop.js";
 import { applyOutcome, rankTeams } from "./money.js";
 import { wealthTier } from "./tier.js";
 import { filledMembers } from "./quizModel.js";
+import { ALL_AVATARS, avatarKey } from "../avatars/avatars.js";
 
 export const COOP_PROMPT = "협력 문항: 팀원과 문장 순서를 맞추세요!";
 const CIRCLED = ["①", "②", "③", "④", "⑤"];
@@ -95,6 +96,34 @@ export function buildReveal({ code, q, question, teams, answers = {}, presence =
     updates[`${g}/balances/${t}`] = balance;
   }
   return { updates, results };
+}
+
+export function buildClaimAvatar({ code, t, gender, job, previous }) {
+  const g = `games/${code}`;
+  const key = avatarKey(gender, job);
+  const updates = {
+    [`${g}/avatarClaims/${key}`]: t,
+    [`${g}/teamAvatar/${t}`]: { gender, job },
+  };
+  if (previous) {
+    const prevKey = avatarKey(previous.gender, previous.job);
+    if (prevKey !== key) updates[`${g}/avatarClaims/${prevKey}`] = null;
+  }
+  return updates;
+}
+
+// 게임 시작: 아바타를 못 고른 팀(팀장 결석 등)에는 남은 아바타를 무작위로 준다.
+export function buildStartPlaying({ code, teams, teamAvatar = {}, claims = {}, rand = Math.random }) {
+  const g = `games/${code}`;
+  const updates = { [`${g}/meta/status`]: "playing" };
+  const free = ALL_AVATARS.filter((a) => !claims[avatarKey(a.gender, a.job)]);
+  for (const t of Object.keys(teams)) {
+    if (teamAvatar[t] || free.length === 0) continue;
+    const [pick] = free.splice(Math.floor(rand() * free.length), 1);
+    updates[`${g}/teamAvatar/${t}`] = pick;
+    updates[`${g}/avatarClaims/${avatarKey(pick.gender, pick.job)}`] = t;
+  }
+  return updates;
 }
 
 export function buildEnd({ code, uid, balances }) {

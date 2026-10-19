@@ -1,10 +1,16 @@
 import { describe, it, expect } from "vitest";
-import { JOBS, renderAvatar } from "../js/avatars/avatars.js";
+import { JOBS, ALL_AVATARS, avatarKey, renderAvatar } from "../js/avatars/avatars.js";
 
 describe("JOBS", () => {
-  it("lists the eight jobs in order", () => {
-    expect(JOBS.map((j) => j.id)).toEqual(["office", "doctor", "chef", "firefighter", "teacher", "programmer", "farmer", "builder"]);
-    expect(JOBS[7].label).toBe("건설노동자");
+  it("lists the eight New York jobs in order", () => {
+    expect(JOBS.map((j) => j.id)).toEqual(["banker", "taxi", "police", "firefighter", "broadway", "hotdog", "builder", "designer"]);
+    expect(JOBS[0].label).toBe("월스트리트 금융인");
+  });
+
+  it("offers sixteen avatars keyed by gender and job", () => {
+    expect(ALL_AVATARS).toHaveLength(16);
+    expect(ALL_AVATARS[0]).toEqual({ gender: "f", job: "banker" });
+    expect(avatarKey("m", "taxi")).toBe("m_taxi");
   });
 });
 
@@ -24,15 +30,15 @@ describe("renderAvatar", () => {
   });
 
   it("labels the bankrupt tier", () => {
-    expect(renderAvatar({ gender: "m", job: "chef", tier: 5 })).toContain("파산");
-    expect(renderAvatar({ gender: "m", job: "chef", tier: 2 })).not.toContain("파산");
+    expect(renderAvatar({ gender: "m", job: "hotdog", tier: 5 })).toContain("파산");
+    expect(renderAvatar({ gender: "m", job: "hotdog", tier: 2 })).not.toContain("파산");
   });
 
-  it("falls back to office for an unknown job", () => {
-    expect(renderAvatar({ gender: "f", job: "astronaut", tier: 2 })).toContain('data-job="office"');
+  it("falls back to banker for an unknown job", () => {
+    expect(renderAvatar({ gender: "f", job: "astronaut", tier: 2 })).toContain('data-job="banker"');
   });
 
   it("uses the requested size", () => {
-    expect(renderAvatar({ gender: "f", job: "doctor", tier: 1, size: 64 })).toContain('width="64"');
+    expect(renderAvatar({ gender: "f", job: "police", tier: 1, size: 64 })).toContain('width="64"');
   });
 });

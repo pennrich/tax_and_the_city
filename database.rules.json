@@ -10,29 +10,49 @@
       "$code": {
         ".read": "auth != null && root.child('games/' + $code + '/meta/teacherUid').val() === auth.uid",
         ".write": "auth != null && (root.child('games/' + $code + '/meta/teacherUid').val() === auth.uid || (!data.exists() && newData.child('meta/teacherUid').val() === auth.uid))",
-
-        "meta": { ".read": "auth != null" },
-        "teams": { ".read": "auth != null" },
-        "played": { ".read": "auth != null" },
-        "current": { ".read": "auth != null" },
-        "reveal": { ".read": "auth != null" },
-
+        "meta": {
+          ".read": "auth != null"
+        },
+        "teams": {
+          ".read": "auth != null"
+        },
+        "played": {
+          ".read": "auth != null"
+        },
+        "current": {
+          ".read": "auth != null"
+        },
+        "reveal": {
+          ".read": "auth != null"
+        },
         "seats": {
           ".read": "auth != null",
           "$t": {
             "$m": {
-              ".write": "auth != null && root.child('games/' + $code + '/teams/' + $t + '/members/' + $m).exists() && newData.exists() && newData.child('uid').val() === auth.uid && (!data.exists() || data.child('uid').val() === auth.uid)"
+              ".write": "auth != null && root.child('games/' + $code + '/teams/' + $t + '/members/' + $m).exists() && newData.exists() && newData.child('uid').val() === auth.uid && (!data.exists() || data.child('uid').val() === auth.uid)",
+              ".validate": "newData.hasChildren(['uid'])"
             }
           }
         },
-
+        "teamAvatar": {
+          ".read": "auth != null",
+          "$t": {
+            ".write": "auth != null && root.child('games/' + $code + '/meta/status').val() === 'lobby' && root.child('games/' + $code + '/uidSeat/' + auth.uid + '/m').val() === 'm1' && root.child('games/' + $code + '/uidSeat/' + auth.uid + '/t').val() === $t && newData.exists() && newData.parent().parent().child('avatarClaims/' + newData.child('gender').val() + '_' + newData.child('job').val()).val() === $t",
+            ".validate": "newData.hasChildren(['gender', 'job'])"
+          }
+        },
+        "avatarClaims": {
+          ".read": "auth != null",
+          "$key": {
+            ".write": "auth != null && root.child('games/' + $code + '/meta/status').val() === 'lobby' && root.child('games/' + $code + '/uidSeat/' + auth.uid + '/m').val() === 'm1' && ((!data.exists() && newData.val() === root.child('games/' + $code + '/uidSeat/' + auth.uid + '/t').val()) || (data.val() === root.child('games/' + $code + '/uidSeat/' + auth.uid + '/t').val() && !newData.exists()))"
+          }
+        },
         "uidSeat": {
           "$uid": {
             ".read": "auth != null && auth.uid === $uid",
             ".write": "auth != null && auth.uid === $uid && newData.exists() && root.child('games/' + $code + '/seats/' + newData.child('t').val() + '/' + newData.child('m').val() + '/uid').val() === auth.uid"
           }
         },
-
         "presence": {
           "$t": {
             "$m": {
@@ -40,24 +60,30 @@
             }
           }
         },
-
         "balances": {
-          "$t": { ".read": "auth != null && root.child('games/' + $code + '/uidSeat/' + auth.uid + '/t').val() === $t" }
+          "$t": {
+            ".read": "auth != null && root.child('games/' + $code + '/uidSeat/' + auth.uid + '/t').val() === $t"
+          }
         },
         "final": {
-          "$t": { ".read": "auth != null && root.child('games/' + $code + '/uidSeat/' + auth.uid + '/t').val() === $t" }
+          "$t": {
+            ".read": "auth != null && root.child('games/' + $code + '/uidSeat/' + auth.uid + '/t').val() === $t"
+          }
         },
         "results": {
           "$q": {
-            "$t": { ".read": "auth != null && root.child('games/' + $code + '/uidSeat/' + auth.uid + '/t').val() === $t" }
+            "$t": {
+              ".read": "auth != null && root.child('games/' + $code + '/uidSeat/' + auth.uid + '/t').val() === $t"
+            }
           }
         },
         "pieceCount": {
           "$q": {
-            "$t": { ".read": "auth != null && root.child('games/' + $code + '/uidSeat/' + auth.uid + '/t').val() === $t" }
+            "$t": {
+              ".read": "auth != null && root.child('games/' + $code + '/uidSeat/' + auth.uid + '/t').val() === $t"
+            }
           }
         },
-
         "pieces": {
           "$q": {
             "$t": {
@@ -68,7 +94,6 @@
             }
           }
         },
-
         "answers": {
           "$q": {
             "$t": {

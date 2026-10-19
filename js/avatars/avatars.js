@@ -2,15 +2,21 @@
 // 다른 그림으로 바꾸고 싶으면 이 파일만 고치면 된다.
 
 export const JOBS = [
-  { id: "office", label: "회사원" },
-  { id: "doctor", label: "의사" },
-  { id: "chef", label: "요리사" },
-  { id: "firefighter", label: "소방관" },
-  { id: "teacher", label: "교사" },
-  { id: "programmer", label: "프로그래머" },
-  { id: "farmer", label: "농부" },
-  { id: "builder", label: "건설노동자" },
+  { id: "banker", label: "월스트리트 금융인" },
+  { id: "taxi", label: "옐로캡 택시기사" },
+  { id: "police", label: "NYPD 경찰관" },
+  { id: "firefighter", label: "FDNY 소방관" },
+  { id: "broadway", label: "브로드웨이 배우" },
+  { id: "hotdog", label: "핫도그 노점상" },
+  { id: "builder", label: "고층빌딩 건설노동자" },
+  { id: "designer", label: "패션 디자이너" },
 ];
+
+export function avatarKey(gender, job) {
+  return `${gender}_${job}`;
+}
+
+export const ALL_AVATARS = ["f", "m"].flatMap((gender) => JOBS.map(({ id }) => ({ gender, job: id })));
 
 export const TIER_LABELS = { 1: "부자", 2: "여유", 3: "빠듯함", 4: "불쌍함", 5: "파산" };
 
@@ -21,14 +27,14 @@ const BG = { 1: "#ffe27a", 2: "#bfe8c4", 3: "#f3e2c0", 4: "#c9d2dc", 5: "#7a2e2e
 
 // 직업별 옷 색: [옷, 옷 그림자]
 const OUTFIT = {
-  office: ["#3b5b92", "#2c4673"],
-  doctor: ["#ffffff", "#d9e2ea"],
-  chef: ["#ffffff", "#d9e2ea"],
+  banker: ["#22304f", "#151e33"],
+  taxi: ["#f7c600", "#c99f00"],
+  police: ["#1d3a6e", "#132850"],
   firefighter: ["#c9302c", "#a32420"],
-  teacher: ["#7a9a4a", "#5f7a37"],
-  programmer: ["#4b4f5c", "#373a44"],
-  farmer: ["#4f7fb8", "#3c6695"],
+  broadway: ["#7b3fbf", "#5a2b91"],
+  hotdog: ["#ffffff", "#d9e2ea"],
   builder: ["#f08a24", "#d0711a"],
+  designer: ["#1b1b1b", "#000000"],
 };
 
 function hairBack(gender) {
@@ -116,47 +122,61 @@ function torso(job, tier) {
 // 직업 소품: { body: 몸 위에 그리는 것, hat: 머리 위 모자(머리카락 대신), held: 손에 든 것 }
 function jobParts(job) {
   switch (job) {
-    case "office":
-      return { body: `<path d="M100 126 L94 134 L100 170 L106 134 Z" fill="#c9302c"/><path d="M94 126 L100 134 L106 126 Z" fill="#a32420"/>` };
-    case "doctor":
+    case "banker":
       return {
         body:
-          `<path d="M100 126 L88 128 L96 176 Z M100 126 L112 128 L104 176 Z" fill="#cfe3f1"/>` +
-          `<path d="M84 130 Q76 162 96 168 M116 130 Q124 162 104 168" stroke="#333" stroke-width="3" fill="none"/>` +
-          `<circle cx="100" cy="170" r="6" fill="#888" stroke="#333" stroke-width="2"/>` +
-          `<rect x="122" y="150" width="14" height="10" rx="2" fill="#5aa7d6"/>`,
+          `<path d="M100 126 L86 128 L95 176 Z M100 126 L114 128 L105 176 Z" fill="#ffffff"/>` +
+          `<path d="M100 128 L95 136 L100 172 L105 136 Z" fill="#c9302c"/>`,
+        held: `<rect x="128" y="166" width="40" height="28" rx="3" fill="#6b4226" stroke="#3d2614" stroke-width="2"/><rect x="142" y="160" width="12" height="8" rx="2" fill="none" stroke="#3d2614" stroke-width="3"/><rect x="146" y="176" width="4" height="6" fill="#f1c40f"/>`,
       };
-    case "chef":
+    case "taxi":
       return {
-        body: `<circle cx="96" cy="150" r="3" fill="#333"/><circle cx="96" cy="166" r="3" fill="#333"/><circle cx="104" cy="150" r="3" fill="#333"/><circle cx="104" cy="166" r="3" fill="#333"/>` +
-          `<path d="M86 124 L100 134 L114 124" fill="#e74c3c"/>`,
-        hat: `<rect x="72" y="36" width="56" height="18" fill="#fff" stroke="#ccc" stroke-width="2"/><circle cx="80" cy="30" r="14" fill="#fff" stroke="#ccc" stroke-width="2"/><circle cx="100" cy="22" r="16" fill="#fff" stroke="#ccc" stroke-width="2"/><circle cx="120" cy="30" r="14" fill="#fff" stroke="#ccc" stroke-width="2"/><rect x="72" y="34" width="56" height="10" fill="#fff"/>`,
+        body:
+          `<g>${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => `<rect x="${52 + i * 10}" y="166" width="5" height="5" fill="#111"/><rect x="${57 + i * 10}" y="171" width="5" height="5" fill="#111"/>`).join("")}</g>` +
+          `<rect x="84" y="140" width="32" height="14" rx="3" fill="#111"/><text x="100" y="151" font-size="10" text-anchor="middle" fill="#f7c600" font-weight="bold" font-family="sans-serif">TAXI</text>`,
+        hat: `<path d="M60 64 Q62 38 100 38 Q138 38 140 64 Z" fill="#3a3a3a"/><path d="M60 62 L150 62 Q152 70 140 70 L60 70 Z" fill="#2a2a2a"/><g>${[0, 1, 2, 3, 4, 5, 6].map((i) => `<rect x="${66 + i * 10}" y="54" width="5" height="5" fill="#f7c600"/>`).join("")}</g>`,
+      };
+    case "police":
+      return {
+        body:
+          `<path d="M100 126 L90 130 L100 146 L110 130 Z" fill="#9db3d6"/><path d="M100 132 L100 200" stroke="#0f2140" stroke-width="2"/>` +
+          `<path d="M118 146 L126 142 L134 146 L134 156 Q126 164 118 156 Z" fill="#f1c40f" stroke="#b8860b" stroke-width="2"/>` +
+          `<rect x="60" y="150" width="20" height="8" fill="#0f2140"/>`,
+        hat: `<path d="M62 62 Q64 32 100 30 Q136 32 138 62 Z" fill="#1d3a6e"/><rect x="58" y="58" width="84" height="10" rx="3" fill="#0f2140"/><path d="M62 68 Q100 80 138 68 L138 72 Q100 86 62 72 Z" fill="#111"/><circle cx="100" cy="46" r="7" fill="#f1c40f" stroke="#b8860b" stroke-width="2"/>`,
       };
     case "firefighter":
       return {
         body: `<rect x="50" y="170" width="100" height="8" fill="#f5d33d"/><rect x="50" y="184" width="100" height="8" fill="#c0c0c0"/>`,
-        hat: `<path d="M58 66 Q60 30 100 30 Q140 30 142 66 Z" fill="#c9302c" stroke="#8a1c19" stroke-width="2"/><path d="M50 66 L150 66 L146 74 L54 74 Z" fill="#a32420"/><rect x="92" y="38" width="16" height="18" rx="3" fill="#f5d33d"/>`,
+        hat:
+          `<path d="M58 66 Q60 30 100 30 Q140 30 142 66 Z" fill="#c9302c" stroke="#8a1c19" stroke-width="2"/><path d="M50 66 L150 66 L146 74 L54 74 Z" fill="#a32420"/>` +
+          `<rect x="86" y="36" width="28" height="20" rx="3" fill="#f5d33d"/><text x="100" y="50" font-size="9" text-anchor="middle" fill="#8a1c19" font-weight="bold" font-family="sans-serif">FDNY</text>`,
       };
-    case "teacher":
+    case "broadway":
       return {
-        body: `<path d="M100 126 L90 130 L100 150 L110 130 Z" fill="#fff"/>`,
-        held: `<g transform="rotate(-10 60 170)"><rect x="40" y="152" width="40" height="30" rx="2" fill="#2e6fbe"/><rect x="44" y="156" width="32" height="22" fill="#e8f0fb"/><path d="M48 162 L72 162 M48 168 L68 168 M48 174 L70 174" stroke="#2e6fbe" stroke-width="2"/></g>`,
-        face: `<circle cx="86" cy="84" r="9" fill="none" stroke="#333" stroke-width="2.5"/><circle cx="114" cy="84" r="9" fill="none" stroke="#333" stroke-width="2.5"/><path d="M95 84 L105 84" stroke="#333" stroke-width="2.5"/>`,
+        body:
+          `<g fill="#f1c40f">${[[66, 150], [88, 170], [120, 156], [136, 182], [74, 188], [108, 190]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3"/>`).join("")}</g>` +
+          `<path d="M84 126 Q100 140 116 126" stroke="#f1c40f" stroke-width="4" fill="none"/>`,
+        face: `<path d="M136 86 Q132 104 116 106" stroke="#333" stroke-width="3" fill="none"/><circle cx="116" cy="106" r="3" fill="#333"/>`,
+        held: `<path d="M24 40 L28 52 L40 52 L30 60 L34 72 L24 64 L14 72 L18 60 L8 52 L20 52 Z" fill="#f1c40f"/>`,
       };
-    case "programmer":
+    case "hotdog":
       return {
-        body: `<path d="M70 126 Q100 146 130 126" stroke="#2b2d35" stroke-width="6" fill="none"/>`,
-        held: `<rect x="120" y="160" width="46" height="30" rx="3" fill="#9aa3ad" stroke="#555" stroke-width="2"/><circle cx="143" cy="175" r="5" fill="#fff"/><path d="M116 190 L170 190" stroke="#555" stroke-width="4"/>`,
+        body: `<g>${[0, 1, 2, 3, 4].map((i) => `<rect x="${56 + i * 20}" y="136" width="10" height="64" fill="#e74c3c"/>`).join("")}</g>`,
+        hat: `<path d="M64 62 Q66 40 100 40 Q134 40 136 62 Z" fill="#e74c3c"/><path d="M100 60 L156 62 Q158 70 136 68 L100 66 Z" fill="#c0392b"/>`,
+        held: `<g transform="rotate(-15 42 172)"><rect x="18" y="164" width="48" height="16" rx="8" fill="#e0a85a"/><rect x="14" y="167" width="56" height="10" rx="5" fill="#b5462a"/><path d="M20 171 Q28 165 36 171 Q44 177 52 171 Q60 165 66 171" stroke="#f1c40f" stroke-width="3" fill="none"/></g>`,
       };
-    case "farmer":
+    case "builder":
       return {
-        body: `<rect x="74" y="140" width="52" height="60" fill="#3c6695"/><rect x="78" y="126" width="8" height="20" fill="#3c6695"/><rect x="114" y="126" width="8" height="20" fill="#3c6695"/><circle cx="82" cy="144" r="3" fill="#f5d33d"/><circle cx="118" cy="144" r="3" fill="#f5d33d"/>`,
-        hat: `<ellipse cx="100" cy="56" rx="62" ry="12" fill="#e7c46a" stroke="#b8963d" stroke-width="2"/><path d="M68 56 Q70 26 100 26 Q130 26 132 56 Z" fill="#e7c46a" stroke="#b8963d" stroke-width="2"/><rect x="68" y="46" width="64" height="7" fill="#c0392b"/>`,
-      };
-    default: // builder
-      return {
-        body: `<path d="M74 128 L74 200 M126 128 L126 200" stroke="#f5f542" stroke-width="10"/><path d="M50 172 L150 172" stroke="#e0e0e0" stroke-width="6"/>`,
+        body: `<path d="M74 128 L74 200 M126 128 L126 200" stroke="#d6ff3d" stroke-width="10"/><path d="M50 172 L150 172" stroke="#e0e0e0" stroke-width="6"/>`,
         hat: `<path d="M60 64 Q62 28 100 28 Q138 28 140 64 Z" fill="#f5d33d" stroke="#c9a51c" stroke-width="2"/><rect x="52" y="62" width="96" height="9" rx="4" fill="#e0b81e"/><rect x="95" y="28" width="10" height="34" fill="#e0b81e"/>`,
+      };
+    default: // designer
+      return {
+        body:
+          `<rect x="86" y="118" width="28" height="14" rx="4" fill="#1b1b1b"/>` +
+          `<path d="M78 128 Q76 170 84 196 M122 128 Q124 170 116 196" stroke="#f1c40f" stroke-width="5" fill="none"/>` +
+          `<g stroke="#333" stroke-width="1.5">${[0, 1, 2, 3, 4, 5].map((i) => `<path d="M${77 - i * 0.3} ${136 + i * 10} l5 0"/><path d="M${121 + i * 0.3} ${136 + i * 10} l-5 0"/>`).join("")}</g>`,
+        hat: `<ellipse cx="96" cy="50" rx="44" ry="16" fill="#b0283a"/><circle cx="96" cy="36" r="5" fill="#b0283a"/>`,
       };
   }
 }
@@ -194,7 +214,7 @@ function bankruptBanner() {
 
 export function renderAvatar({ gender, job, tier, size = 160 }) {
   const g = gender === "f" ? "f" : "m";
-  const j = OUTFIT[job] ? job : "office";
+  const j = OUTFIT[job] ? job : "banker";
   const t = [1, 2, 3, 4, 5].includes(tier) ? tier : 2;
   const parts = jobParts(j);
   const hasHat = Boolean(parts.hat);

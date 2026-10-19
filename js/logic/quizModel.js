@@ -23,10 +23,10 @@ export function blankDraft() {
   return { name: "", startMoney: 10000, teams, questions: [blankQuestion()] };
 }
 
+// 채워진 칸만 m1부터 다시 번호를 매긴다. 맨 먼저 입력된 팀원(m1)이 팀장이다.
 export function filledMembers(team) {
-  return Object.fromEntries(
-    MEMBER_IDS.filter((m) => (team.members?.[m] ?? "").trim() !== "").map((m) => [m, team.members[m].trim()]),
-  );
+  const names = MEMBER_IDS.map((m) => (team.members?.[m] ?? "").trim()).filter((n) => n !== "");
+  return Object.fromEntries(names.map((n, i) => [MEMBER_IDS[i], n]));
 }
 
 const isWholeAtLeast = (v, min) => Number.isInteger(v) && v >= min;

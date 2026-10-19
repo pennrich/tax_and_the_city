@@ -27,7 +27,9 @@ beforeEach(async () => {
         [CODE]: {
           meta: { teacherUid: "T", status: "playing" },
           teams: { t1: { name: "1팀", members: { m1: "a", m2: "b" } }, t2: { name: "2팀", members: { m1: "c" } } },
-          seats: { t1: { m1: { uid: "S1", gender: "f", job: "chef" }, m2: { uid: "S2", gender: "m", job: "doctor" } }, t2: { m1: { uid: "S3", gender: "m", job: "office" } } },
+          seats: { t1: { m1: { uid: "S1" }, m2: { uid: "S2" } }, t2: { m1: { uid: "S3" } } },
+          teamAvatar: { t2: { gender: "m", job: "police" } },
+          avatarClaims: { m_police: "t2" },
           uidSeat: { S1: { t: "t1", m: "m1" }, S2: { t: "t1", m: "m2" }, S3: { t: "t2", m: "m1" } },
           balances: { t1: 10000, t2: 10000 },
           current: { q: 2, type: "choice", text: "Q", endsAt: Date.now() + 60000, phase: "open" },
@@ -74,11 +76,11 @@ describe("balances", () => {
 describe("seats", () => {
   it("lets a student take an empty seat", async () => {
     await env.withSecurityRulesDisabled((ctx) => remove(ref(ctx.database(), `${G}/seats/t2/m1`)));
-    await assertSucceeds(set(ref(db("S9"), `${G}/seats/t2/m1`), { uid: "S9", gender: "f", job: "farmer" }));
+    await assertSucceeds(set(ref(db("S9"), `${G}/seats/t2/m1`), { uid: "S9" }));
   });
 
   it("refuses a seat someone else holds", async () => {
-    await assertFails(set(ref(db("S9"), `${G}/seats/t1/m1`), { uid: "S9", gender: "f", job: "farmer" }));
+    await assertFails(set(ref(db("S9"), `${G}/seats/t1/m1`), { uid: "S9" }));
   });
 });
 
@@ -128,5 +130,45 @@ describe("coop pieces", () => {
 
   it("hides a teammate's piece before reveal", async () => {
     await assertFails(get(ref(db("S1"), `${G}/pieces/3/t1/m2`)));
+  });
+});
+
+describe("team avatar claims", () => {
+  const lobby = () => env.withSecurityRulesDisabled((ctx) => set(ref(ctx.database(), `${G}/meta/status`), "lobby"));
+  const claim = (uid, t, key, gender, job, extra = {}) =>
+    update(ref(db(uid)), { [`${G}/avatarClaims/${key}`]: t, [`${G}/teamAvatar/${t}`]: { gender, job }, ...extra });
+
+  it("lets a leader claim a free avatar in the lobby", async () => {
+    await lobby();
+    await assertSucceeds(claim("S1", "t1", "f_taxi", "f", "taxi"));
+  });
+
+  it("refuses an avatar another team holds", async () => {
+    await lobby();
+    await assertFails(claim("S1", "t1", "m_police", "m", "police"));
+  });
+
+  it("refuses a claim from a member who is not the leader", async () => {
+    await lobby();
+    await assertFails(claim("S2", "t1", "f_taxi", "f", "taxi"));
+  });
+
+  it("refuses claims once the game is playing", async () => {
+    await assertFails(claim("S1", "t1", "f_taxi", "f", "taxi"));
+  });
+
+  it("lets a leader swap and free their previous avatar", async () => {
+    await lobby();
+    await assertSucceeds(claim("S3", "t2", "f_taxi", "f", "taxi", { [`${G}/avatarClaims/m_police`]: null }));
+  });
+
+  it("refuses deleting another team's claim", async () => {
+    await lobby();
+    await assertFails(set(ref(db("S1"), `${G}/avatarClaims/m_police`), null));
+  });
+
+  it("lets everyone read avatars", async () => {
+    await assertSucceeds(get(ref(db("S1"), `${G}/teamAvatar`)));
+    await assertSucceeds(get(ref(db("S1"), `${G}/avatarClaims`)));
   });
 });

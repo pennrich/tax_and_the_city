@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildStartGame, buildOpenQuestion, buildReveal, buildEnd, answerText } from "../js/logic/updates.js";
+import { buildStartGame, buildOpenQuestion, buildReveal, buildEnd, answerText, buildClaimAvatar, buildStartPlaying } from "../js/logic/updates.js";
 import { blankDraft } from "../js/logic/quizModel.js";
 import { rankTeams } from "../js/logic/money.js";
 
@@ -119,5 +119,40 @@ describe("buildEnd", () => {
     expect(u[`games/${CODE}/meta/status`]).toBe("ended");
     expect(u[`games/${CODE}/current`]).toBeNull();
     expect(u["teachers/U/activeGame"]).toBeNull();
+  });
+});
+
+describe("buildClaimAvatar", () => {
+  it("claims the new avatar, sets the team avatar and frees the previous one", () => {
+    expect(buildClaimAvatar({ code: "C", t: "t2", gender: "f", job: "taxi", previous: { gender: "m", job: "police" } })).toEqual({
+      "games/C/avatarClaims/f_taxi": "t2",
+      "games/C/teamAvatar/t2": { gender: "f", job: "taxi" },
+      "games/C/avatarClaims/m_police": null,
+    });
+  });
+
+  it("does not free anything when re-picking the same avatar", () => {
+    const u = buildClaimAvatar({ code: "C", t: "t2", gender: "f", job: "taxi", previous: { gender: "f", job: "taxi" } });
+    expect(u["games/C/avatarClaims/f_taxi"]).toBe("t2");
+  });
+});
+
+describe("buildStartPlaying", () => {
+  it("starts the game and gives teams without an avatar distinct free ones", () => {
+    const teams = { t1: {}, t2: {}, t3: {} };
+    const u = buildStartPlaying({
+      code: "C", teams, teamAvatar: { t1: { gender: "f", job: "banker" } }, claims: { f_banker: "t1" }, rand: () => 0,
+    });
+    expect(u["games/C/meta/status"]).toBe("playing");
+    const a2 = u["games/C/teamAvatar/t2"];
+    const a3 = u["games/C/teamAvatar/t3"];
+    expect(a2).toBeTruthy();
+    expect(a3).toBeTruthy();
+    const k2 = `${a2.gender}_${a2.job}`;
+    const k3 = `${a3.gender}_${a3.job}`;
+    expect(k2).not.toBe(k3);
+    expect([k2, k3]).not.toContain("f_banker");
+    expect(u[`games/C/avatarClaims/${k2}`]).toBe("t2");
+    expect(u["games/C/teamAvatar/t1"]).toBeUndefined();
   });
 });

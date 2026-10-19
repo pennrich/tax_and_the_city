@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { blankQuestion, resizeQuestions, blankDraft, validateDraft } from "../js/logic/quizModel.js";
+import { blankQuestion, resizeQuestions, blankDraft, validateDraft, filledMembers } from "../js/logic/quizModel.js";
 
 function goodDraft() {
   const d = blankDraft();
@@ -101,5 +101,11 @@ describe("validateDraft", () => {
     const d = goodDraft();
     d.questions[0].choices = ["비례세", "누진세", ""];
     expect(validateDraft(d)).toContain("1번 문항: 빈 보기를 채우거나 지우세요");
+  });
+});
+
+describe("filledMembers", () => {
+  it("renumbers filled slots from m1 so the first entered member leads", () => {
+    expect(filledMembers({ members: { m1: "", m2: "가", m3: "", m4: " 나 ", m5: "" } })).toEqual({ m1: "가", m2: "나" });
   });
 });
