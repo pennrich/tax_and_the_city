@@ -20,6 +20,20 @@
 <div id="grid"></div>
 <script type="module">
 import { JOBS, TIER_LABELS, renderAvatar } from "./js/avatars/avatars.js";
+import { sound } from "./js/sound.js";
+
+const sounds = document.getElementById("sounds");
+for (const [name, label] of [["coins", "상금"], ["tax", "세금"], ["bankrupt", "파산"], ["tick", "째깍"], ["fanfare", "팡파르"]]) {
+  const b = document.createElement("button");
+  b.textContent = label;
+  b.onclick = () => { sound.unlock(); sound[name](); };
+  sounds.append(b);
+}
+const mute = document.createElement("button");
+const paint = () => (mute.textContent = sound.isMuted() ? "🔇 음소거 중" : "🔊 소리 켬");
+mute.onclick = () => { sound.setMuted(!sound.isMuted()); paint(); };
+paint();
+sounds.append(mute);
 
 const grid = document.getElementById("grid");
 for (const gender of ["f", "m"]) {
