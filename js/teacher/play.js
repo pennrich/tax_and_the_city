@@ -1,6 +1,6 @@
 // 진행 화면(TV): 문항 번호 → 문제·카운트다운·제출 현황 → 정답 공개 연출. 오른쪽에 순위·잔액.
 // TV는 학생 모두가 보므로 문항 내용·정답·학생 답은 공개 전에 절대 그리지 않는다.
-import { db, ref, get, update as dbUpdate, serverNow } from "../firebase.js";
+import { db, ref, get, update as dbUpdate, runTransaction, serverNow } from "../firebase.js";
 import { buildOpenQuestion, buildReveal } from "../logic/updates.js";
 import { isPresent } from "../logic/judge.js";
 import { rankTeams, formatMoney } from "../logic/money.js";
@@ -80,7 +80,7 @@ export function update(ctx) {
 function renderQnums() {
   const g = C.game;
   const n = g.meta.questionCount;
-  const open = g.current?.phase === "open";
+  const open = g.current && g.current.phase !== "revealed";
   const played = g.played ?? {};
   let html = "";
   for (let q = 0; q < n; q++) {
@@ -112,7 +112,7 @@ function renderStage() {
     const left = C.game.meta.questionCount - Object.keys(C.game.played ?? {}).length;
     return setHtml(stage, `<div class="stage-idle"><h1>문항 번호를 눌러 문제를 내세요</h1><p>남은 문항 ${left}개</p></div>`);
   }
-  if (cur.phase === "open") return setHtml(stage, openStage(cur));
+  if (cur.phase === "open" || cur.phase === "closing") return setHtml(stage, openStage(cur));
   return renderRevealStage(cur);
 }
 
@@ -136,7 +136,7 @@ function tick() {
   if (!root || !C?.game) return;
   const cur = C.game.current;
   const clock = $("#clock", root);
-  if (cur?.phase === "open" && clock) {
+  if ((cur?.phase === "open" || cur?.phase === "closing") && clock) {
     const left = Math.max(0, Math.ceil((cur.endsAt - serverNow()) / 1000));
     const text = left > 0 ? String(left) : "마감!";
     if (clock.textContent !== text) {
@@ -165,7 +165,7 @@ function renderRank() {
     const tier = wealthTier(bal, g.meta.startMoney);
     const seated = Object.keys(team.members ?? {}).filter((m) => g.seats?.[t]?.[m]);
     let status = "";
-    if (cur?.phase === "open" && seated.length) {
+    if (cur && cur.phase !== "revealed" && seated.length) {
       const answered = Object.keys(g.answers?.[cur.q]?.[t] ?? {}).length;
       status = `<div class="sub">${answered} / ${seated.length}명 제출</div>`;
     }
@@ -185,11 +185,14 @@ function renderRank() {
 async function reveal() {
   if (revealing) return;
   const cur = C.game.current;
-  if (!cur || cur.phase !== "open") return;
+  if (!cur || (cur.phase !== "open" && cur.phase !== "closing")) return;
   revealing = true;
   $("#reveal", root)?.setAttribute("disabled", "");
   try {
     const q = cur.q;
+    // 먼저 제출을 닫는다(규칙상 'open'일 때만 답을 받는다). 그다음에 읽어야 채점에서 빠지는 답이 없다.
+    const closed = await runTransaction(ref(db, `games/${C.code}/current/phase`), (ph) => (ph === "revealed" ? undefined : "closing"));
+    if (!closed.committed) return;
     const fresh = (await get(ref(db, `games/${C.code}`))).val();
     const question = C.key.questions[q];
     let coopKey = C.coopKey?.[q];
@@ -197,7 +200,7 @@ async function reveal() {
     const r = buildReveal({
       code: C.code, q, question, teams: fresh.teams,
       answers: fresh.answers?.[q] ?? {}, presence: fresh.presence ?? {}, balances: fresh.balances ?? {},
-      startMoney: fresh.meta.startMoney, now: serverNow(), alreadyRevealed: Boolean(fresh.results?.[q]), coopKey: coopKey ?? {},
+      startMoney: fresh.meta.startMoney, now: serverNow(), deadline: cur.endsAt, alreadyRevealed: Boolean(fresh.results?.[q]), coopKey: coopKey ?? {},
     });
     if (r) await dbUpdate(ref(db), r.updates);
   } finally {

@@ -60,7 +60,7 @@ export function playView(S) {
     if (pieces === undefined || count === undefined) return idle();
     if (!pieces) return { key: `rest:${q}`, mood: "rest", html: `<section class="screen"><h1>이번 문항은 쉬어요</h1><p>다음 문항부터 참여해요</p></section>` };
   }
-  if (serverNow() > cur.endsAt) return { key: `closed:${q}`, mood: "rest", html: `<section class="screen"><h1>⏰ 마감!</h1><p>정답 공개를 기다려요</p></section>` };
+  if (cur.phase === "closing" || serverNow() > cur.endsAt) return { key: `closed:${q}`, mood: "rest", html: `<section class="screen"><h1>⏰ 마감!</h1><p>정답 공개를 기다려요</p></section>` };
   return formView(S, cur, pieces);
 }
 

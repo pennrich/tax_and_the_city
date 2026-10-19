@@ -67,8 +67,9 @@ export function answerText(question) {
   return question.text.trim();
 }
 
-export function buildReveal({ code, q, question, teams, answers = {}, presence = {}, balances, startMoney, now, alreadyRevealed, coopKey = {} }) {
+export function buildReveal({ code, q, question, teams, answers = {}, presence = {}, balances, startMoney, now, deadline = Infinity, alreadyRevealed, coopKey = {} }) {
   if (alreadyRevealed) return null;
+  const judgedAt = Math.min(now, deadline); // 마감과 공개 중 먼저 온 때
   const g = `games/${code}`;
   const coop = question.type === "coop";
   const updates = {
@@ -88,7 +89,7 @@ export function buildReveal({ code, q, question, teams, answers = {}, presence =
       memberIds,
       answers: answers[t] ?? {},
       presence: presence[t] ?? {},
-      now,
+      now: judgedAt,
       isMemberCorrect: coop ? (m, v) => isCoopCorrect(key[m], v) : (m, v) => isCorrect(question, v),
       excluded: coop ? memberIds.filter((m) => !key[m]) : [],
     });

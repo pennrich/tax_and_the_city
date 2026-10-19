@@ -79,6 +79,18 @@ describe("buildReveal", () => {
     expect(r.updates[`games/${CODE}/current/phase`]).toBe("revealed");
   });
 
+  it("judges presence at the deadline even when revealed much later", () => {
+    const team = { t1: { name: "1팀", members: { m1: "a", m2: "b" } } };
+    const r = buildReveal({
+      code: CODE, q: 2, question: CHOICE, teams: team, startMoney: 10000, alreadyRevealed: false,
+      now: 120000, deadline: 100000,
+      answers: { t1: { m1: { value: 1 } } },
+      presence: { t1: { m1: on, m2: { online: false, lastChanged: 103000 } } },
+      balances: { t1: 10000 },
+    });
+    expect(r.results.t1.outcome).toBe("wrong");
+  });
+
   it("returns null when the question was already revealed", () => {
     expect(buildReveal({ code: CODE, q: 2, question: CHOICE, teams, startMoney: 0, now: 0, alreadyRevealed: true, answers: {}, presence: {}, balances: {} })).toBeNull();
   });

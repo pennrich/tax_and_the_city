@@ -103,6 +103,11 @@ describe("answers", () => {
     await assertFails(set(ref(db("S1"), `${G}/answers/2/t1/m1`), { value: 1, at: 1 }));
   });
 
+  it("refuses answers once the teacher starts closing", async () => {
+    await env.withSecurityRulesDisabled((ctx) => set(ref(ctx.database(), `${G}/current/phase`), "closing"));
+    await assertFails(set(ref(db("S1"), `${G}/answers/2/t1/m1`), { value: 1, at: 1 }));
+  });
+
   it("refuses answers two seconds after the deadline", async () => {
     await env.withSecurityRulesDisabled((ctx) => set(ref(ctx.database(), `${G}/current/endsAt`), Date.now() - 2000));
     await assertFails(set(ref(db("S1"), `${G}/answers/2/t1/m1`), { value: 1, at: 1 }));

@@ -79,6 +79,11 @@ function start() {
     listen("current", `${g}/current`, (v) => (S.current = v));
     setInterval(render, 500); // 남은 시간 표시·마감 전환
     listen("uidSeat", `${g}/uidSeat/${S.uid}`, (v) => {
+      // 선생님이 자리를 풀면, 예전 자리에 걸어 둔 "끊기면 오프라인" 예약을 취소한다.
+      // 안 그러면 이 기기가 나중에 끊길 때 그 자리를 새로 잡은 학생이 오프라인으로 바뀐다.
+      if (S.mySeat && (!v || v.t !== S.mySeat.t || v.m !== S.mySeat.m)) {
+        onDisconnect(ref(db, `${g}/presence/${S.mySeat.t}/${S.mySeat.m}`)).cancel().catch(() => {});
+      }
       S.mySeat = v;
       if (v) {
         listen("balance", `${g}/balances/${v.t}`, (b) => (S.balance = b));
