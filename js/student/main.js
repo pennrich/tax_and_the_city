@@ -8,7 +8,7 @@ import { ALL_AVATARS, JOBS, avatarKey, renderAvatar } from "../avatars/avatars.j
 import { buildClaimAvatar } from "../logic/updates.js";
 import { formatMoney } from "../logic/money.js";
 import { wealthTier } from "../logic/tier.js";
-import { esc, $, $$, toast } from "../ui/dom.js";
+import { esc, $, $$, toast, bindStatueShortcut } from "../ui/dom.js";
 import { playView } from "./play.js";
 
 const app = $("#app");
@@ -36,9 +36,10 @@ if (!showSetupNeededIfMissing()) {
 }
 
 function renderCodeEntry(msg = "") {
-  app.innerHTML = `<section class="screen"><h1>🗽 Tax and the City</h1>
+  app.innerHTML = `<section class="screen"><h1><span class="statue">🗽</span> Tax and the City</h1>
     <p>${msg || "선생님 화면에 보이는 입장 코드를 입력하세요"}</p>
     <div class="code-entry"><input id="code" maxlength="6" autocomplete="off"><button id="go">들어가기</button></div></section>`;
+  bindStatueShortcut(app);
   $("#go").onclick = () => {
     const v = $("#code").value.trim().toUpperCase();
     if (!v) return;
@@ -158,16 +159,18 @@ function teamView() {
   const teams = Object.entries(S.teams);
   return {
     key: `team:${teams.map(([t, x]) => t + x.name).join()}`,
-    html: `<section class="screen"><h1>🗽 Tax and the City</h1><h2>우리 팀을 고르세요</h2>
+    html: `<section class="screen"><h1><span class="statue">🗽</span> Tax and the City</h1><h2>우리 팀을 고르세요</h2>
       <div class="choices-grid">${teams.map(([t, x]) => `<button data-t="${t}">${esc(x.name)}</button>`).join("")}</div></section>`,
-    bind: () =>
+    bind: () => {
+      bindStatueShortcut(app);
       $$("[data-t]").forEach(
         (b) =>
           (b.onclick = () => {
             S.pickTeam = b.dataset.t;
             render();
           }),
-      ),
+      );
+    },
   };
 }
 

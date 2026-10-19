@@ -74,3 +74,4 @@ input:focus, select:focus, textarea:focus { outline: 3px solid var(--taxi); outl
     linear-gradient(transparent 70%, rgba(247, 198, 0, .08)),
     var(--night);
 }
+.statue { cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation; }

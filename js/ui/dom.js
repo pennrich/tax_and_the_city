@@ -24,3 +24,20 @@ export function toast(msg, ms = 2600) {
 export function newId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
+
+// 🗽 로고를 두 번 톡톡 누르면 준비 페이지(admin.html)로 간다. 교사용 숨은 입구.
+// 안드로이드 크롬은 dblclick이 잘 안 오므로 두 번 탭을 직접 잰다.
+export function bindStatueShortcut(root = document) {
+  $$(".statue", root).forEach((el) => {
+    let last = 0;
+    el.addEventListener("pointerup", () => {
+      const now = Date.now();
+      if (now - last < 400) {
+        const url = new URL("admin.html", location.href);
+        if (new URLSearchParams(location.search).get("emu") === "1") url.searchParams.set("emu", "1");
+        location.href = url.toString();
+      }
+      last = now;
+    });
+  });
+}

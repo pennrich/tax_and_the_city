@@ -5,7 +5,7 @@ import { buildStartGame } from "../logic/updates.js";
 import { normalizeDraft, validateDraft } from "../logic/quizModel.js";
 import { makeGameCode } from "../logic/gameCode.js";
 import { sound } from "../sound.js";
-import { esc, $, $$, toast } from "../ui/dom.js";
+import { esc, $, $$, toast, bindStatueShortcut } from "../ui/dom.js";
 import * as lobby from "./lobby.js";
 import * as play from "./play.js";
 import * as end from "./end.js";
@@ -45,8 +45,9 @@ function setupMute() {
 
 function showLogin() {
   current = "login";
-  app.innerHTML = `<section class="center"><h1 class="logo">🗽 Tax and the City</h1>
+  app.innerHTML = `<section class="center"><h1 class="logo"><span class="statue">🗽</span> Tax and the City</h1>
     <button id="login" class="big">교사 로그인 (구글)</button></section>`;
+  bindStatueShortcut(app);
   $("#login").onclick = () => signInTeacher().catch((e) => toast(`로그인 실패: ${e.code ?? e.message}`));
 }
 
@@ -62,10 +63,11 @@ function showList() {
       .sort((a, b) => (b[1].updatedAt ?? 0) - (a[1].updatedAt ?? 0))
       .map(([id, d]) => `<button class="game-card" data-id="${id}">${esc(d.name || "(이름 없음)")}</button>`)
       .join("");
-    app.innerHTML = `<section class="center"><h1 class="logo">🗽 Tax and the City</h1>
+    app.innerHTML = `<section class="center"><h1 class="logo"><span class="statue">🗽</span> Tax and the City</h1>
       <h2>오늘 할 게임을 고르세요</h2>
       <div class="game-cards">${cards || "<p>준비된 게임이 없어요. 먼저 준비 페이지(admin.html)에서 게임을 만들어 주세요.</p>"}</div></section>`;
     $$(".game-card").forEach((b) => (b.onclick = () => startGame(b.dataset.id)));
+    bindStatueShortcut(app);
   });
 }
 
