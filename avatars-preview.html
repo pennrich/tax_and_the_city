@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>아바타·효과음 확인 (개발용)</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #1f2430; color: #fff; margin: 16px; }
+  h2 { margin: 24px 0 8px; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+  .row b { width: 120px; }
+  .tiers { display: flex; gap: 8px; margin-left: 128px; }
+  .tiers span { width: 96px; text-align: center; }
+  button { font-size: 18px; padding: 10px 16px; margin: 4px; }
+</style>
+</head>
+<body>
+<h1>아바타 80종 확인</h1>
+<div id="sounds"></div>
+<div id="grid"></div>
+<script type="module">
+import { JOBS, TIER_LABELS, renderAvatar } from "./js/avatars/avatars.js";
+
+const grid = document.getElementById("grid");
+for (const gender of ["f", "m"]) {
+  grid.insertAdjacentHTML("beforeend", `<h2>${gender === "f" ? "여성" : "남성"}</h2><div class="tiers">${[1, 2, 3, 4, 5].map((t) => `<span>${t} ${TIER_LABELS[t]}</span>`).join("")}</div>`);
+  for (const { id, label } of JOBS) {
+    const cells = [1, 2, 3, 4, 5].map((tier) => renderAvatar({ gender, job: id, tier, size: 96 })).join("");
+    grid.insertAdjacentHTML("beforeend", `<div class="row"><b>${label}</b>${cells}</div>`);
+  }
+}
+</script>
+</body>
+</html>
