@@ -23,6 +23,26 @@ export function blankDraft() {
   return { name: "", startMoney: 10000, teams, questions: [blankQuestion()] };
 }
 
+const asArray = (v) => (Array.isArray(v) ? v : v ? Object.values(v) : []);
+
+export function normalizeQuestion(q = {}) {
+  const base = blankQuestion();
+  const choices = asArray(q.choices);
+  return { ...base, ...q, choices: choices.length ? choices : base.choices, acceptedRaw: q.acceptedRaw ?? "", answer: q.answer ?? null };
+}
+
+// Firebase는 빈 배열·빈 객체를 저장하지 않으므로 읽어 온 초안을 원래 모양으로 되돌린다.
+export function normalizeDraft(d = {}) {
+  const blank = blankDraft();
+  const teams = {};
+  for (const t of TEAM_IDS) {
+    const src = d.teams?.[t] ?? {};
+    teams[t] = { name: src.name ?? blank.teams[t].name, members: { ...blank.teams[t].members, ...(src.members ?? {}) } };
+  }
+  const questions = asArray(d.questions).map(normalizeQuestion);
+  return { ...blank, ...d, teams, questions: questions.length ? questions : blank.questions };
+}
+
 // 채워진 칸만 m1부터 다시 번호를 매긴다. 맨 먼저 입력된 팀원(m1)이 팀장이다.
 export function filledMembers(team) {
   const names = MEMBER_IDS.map((m) => (team.members?.[m] ?? "").trim()).filter((n) => n !== "");

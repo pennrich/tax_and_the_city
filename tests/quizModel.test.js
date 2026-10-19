@@ -109,3 +109,20 @@ describe("filledMembers", () => {
     expect(filledMembers({ members: { m1: "", m2: "가", m3: "", m4: " 나 ", m5: "" } })).toEqual({ m1: "가", m2: "나" });
   });
 });
+
+describe("normalizeDraft", () => {
+  it("restores what Firebase drops: empty choices, members and questions", async () => {
+    const { normalizeDraft } = await import("../js/logic/quizModel.js");
+    const d = normalizeDraft({
+      name: "g", startMoney: 5000,
+      teams: { t1: { name: "1팀", members: { m1: "가" } } },
+      questions: [{ type: "coop", text: "a b c d e", reward: 1, tax: 2, seconds: 30 }, { type: "choice", text: "q", choices: { 0: "x", 1: "y" }, answer: 1, reward: 1, tax: 1, seconds: 10 }],
+    });
+    expect(d.teams.t1.members).toEqual({ m1: "가", m2: "", m3: "", m4: "", m5: "" });
+    expect(d.teams.t7).toEqual({ name: "7팀", members: { m1: "", m2: "", m3: "", m4: "", m5: "" } });
+    expect(d.questions[0].choices).toEqual(["", "", "", ""]);
+    expect(d.questions[0].acceptedRaw).toBe("");
+    expect(d.questions[1].choices).toEqual(["x", "y"]);
+    expect(normalizeDraft({ name: "x" }).questions).toHaveLength(1);
+  });
+});

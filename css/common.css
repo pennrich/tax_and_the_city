@@ -1,0 +1,76 @@
+/* Tax and the City — 공통 색·글꼴·컴포넌트. 뉴욕 밤거리(남색) + 옐로캡(노랑) + 돈(초록) + 세금(빨강) */
+@import url("https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=swap");
+
+:root {
+  --night: #141a2e;
+  --night-2: #1f2742;
+  --night-3: #2c3657;
+  --taxi: #f7c600;
+  --taxi-dark: #c99f00;
+  --money: #22b35e;
+  --money-dark: #178045;
+  --tax: #e3342f;
+  --tax-dark: #b0201c;
+  --paper: #fffaf0;
+  --ink: #1b1b1b;
+  --muted: #8a93ad;
+  --warn: #ffb020;
+  --radius: 14px;
+  --font: "Noto Sans KR", system-ui, sans-serif;
+  --display: "Black Han Sans", "Noto Sans KR", sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: var(--font); background: var(--night); color: #fff; }
+
+h1, h2, h3, .display { font-family: var(--display); font-weight: 400; letter-spacing: .5px; }
+
+button, .btn {
+  font: 700 18px var(--font);
+  border: 0;
+  border-radius: var(--radius);
+  padding: 14px 22px;
+  min-height: 52px;
+  cursor: pointer;
+  background: var(--taxi);
+  color: var(--ink);
+  box-shadow: 0 4px 0 var(--taxi-dark);
+  transition: transform .06s, box-shadow .06s;
+}
+button:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--taxi-dark); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+button.secondary { background: var(--night-3); color: #fff; box-shadow: 0 4px 0 #0c1020; }
+button.danger { background: var(--tax); color: #fff; box-shadow: 0 4px 0 var(--tax-dark); }
+button.ghost { background: transparent; color: inherit; box-shadow: none; border: 2px solid currentColor; }
+
+input, select, textarea {
+  font: 18px var(--font);
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 2px solid #c9cfdf;
+  background: #fff;
+  color: var(--ink);
+}
+input:focus, select:focus, textarea:focus { outline: 3px solid var(--taxi); outline-offset: 1px; }
+
+.money { font-variant-numeric: tabular-nums; }
+.debt { color: var(--tax); }
+
+.overlay {
+  position: fixed; inset: 0; background: rgba(8, 10, 20, .82);
+  display: flex; align-items: center; justify-content: center; z-index: 50;
+}
+.overlay[hidden] { display: none; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  background: var(--ink); color: #fff; padding: 14px 22px; border-radius: 999px;
+  font-weight: 700; z-index: 60; box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
+}
+
+.skyline {
+  background:
+    linear-gradient(transparent 70%, rgba(247, 198, 0, .08)),
+    var(--night);
+}

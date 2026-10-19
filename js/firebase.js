@@ -3,7 +3,7 @@
 import { firebaseConfig } from "./config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 import {
-  getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, onAuthStateChanged, signOut, connectAuthEmulator,
+  getAuth, GoogleAuthProvider, signInWithPopup, signInWithCredential, signInAnonymously, onAuthStateChanged, signOut, connectAuthEmulator,
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 import { getDatabase, ref, onValue, connectDatabaseEmulator } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-database.js";
 
@@ -36,6 +36,11 @@ export function serverNow() {
 }
 
 export function signInTeacher() {
+  if (useEmulator) {
+    // 에뮬레이터 전용 가짜 구글 계정 (실제 서비스에서는 쓰이지 않음)
+    const fake = GoogleAuthProvider.credential('{"sub":"emu-teacher","email":"teacher@example.com","email_verified":true}');
+    return signInWithCredential(auth, fake).then((r) => r.user);
+  }
   return signInWithPopup(auth, new GoogleAuthProvider()).then((r) => r.user);
 }
 

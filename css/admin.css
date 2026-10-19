@@ -1,0 +1,67 @@
+/* 준비 페이지: 밝은 종이 배경에서 편집 */
+body.admin { background: #eef1f7; color: var(--ink); }
+
+.bar {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 20px; background: var(--night); color: #fff;
+}
+.bar h1 { margin: 0; font-size: 26px; }
+.bar h1 small { font-family: var(--font); font-size: 15px; color: var(--taxi); margin-left: 8px; }
+
+main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 120px; }
+
+.card { background: #fff; border-radius: var(--radius); padding: 20px; margin-bottom: 18px; box-shadow: 0 2px 8px rgba(20, 26, 46, .08); }
+.card h2 { margin: 0 0 14px; font-size: 24px; color: var(--night); }
+
+.login { text-align: center; padding: 60px 20px; }
+.login p { font-size: 18px; color: #555; }
+
+.drafts { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.draft-item { border: 2px solid #dde2ee; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.draft-item b { font-size: 18px; }
+.draft-item .row { display: flex; gap: 8px; }
+.draft-item button { min-height: 42px; padding: 8px 14px; font-size: 16px; }
+
+.field { display: flex; flex-direction: column; gap: 6px; font-weight: 700; }
+.field-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.field-row .field { flex: 1 1 220px; }
+
+.teams { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.team { border: 2px solid #dde2ee; border-radius: 12px; padding: 12px; }
+.team .team-name { width: 100%; font-weight: 700; margin-bottom: 8px; }
+.team .members { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.team .members input { font-size: 16px; padding: 8px 10px; min-width: 0; width: 100%; }
+.choice input[type="text"], .field input, .field textarea { min-width: 0; }
+.team .members input:first-child { border-color: var(--taxi); }
+.team .hint { font-size: 13px; color: #777; margin-top: 6px; }
+
+.q { border: 2px solid #dde2ee; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+.q-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.q-head b { font-size: 20px; }
+.types { display: inline-flex; border-radius: 10px; overflow: hidden; border: 2px solid var(--night); }
+.types button { border-radius: 0; box-shadow: none; min-height: 40px; padding: 6px 14px; font-size: 15px; background: #fff; }
+.types button.on { background: var(--night); color: var(--taxi); }
+.q textarea { width: 100%; min-height: 70px; resize: vertical; }
+.choices { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; }
+.choice { display: flex; align-items: center; gap: 8px; }
+.choice input[type="text"] { flex: 1; }
+.choice input[type="radio"] { width: 24px; height: 24px; }
+.choice button { min-height: 40px; padding: 4px 12px; }
+.coop-info { margin: 8px 0; font-size: 15px; }
+.coop-info .count.bad { color: var(--tax); font-weight: 900; }
+.coop-info .preview { background: #fff8d6; border-radius: 8px; padding: 8px 10px; margin-top: 6px; }
+.nums { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+.nums label { display: flex; align-items: center; gap: 6px; font-weight: 700; }
+.nums input { width: 110px; }
+
+.sets { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+
+.errors { background: #ffe8e7; border: 2px solid var(--tax); border-radius: 12px; padding: 12px 16px; color: var(--tax-dark); }
+.errors ul { margin: 6px 0 0; padding-left: 20px; }
+
+.savebar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  display: flex; justify-content: center; gap: 12px; padding: 12px; background: rgba(20, 26, 46, .92);
+}
+.savebar button { min-width: 200px; font-size: 20px; }
