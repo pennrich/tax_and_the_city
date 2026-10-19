@@ -50,20 +50,25 @@
   | 5 | 잔액 < 0 |
 
   S ≤ 0이면 잔액 ≥ 0일 때 2단계, 잔액 < 0일 때 5단계로 한다.
-- **아바타:**
+- **아바타 (개정: Task 13이 Task 3의 직업 목록을 대체한다):**
   - 성별: `f`, `m`
-  - 직업 8종 (ID와 이름, 그대로 사용):
+  - 직업 8종, 뉴욕 직업인 (ID와 이름, 그대로 사용):
 
     | ID | 이름 |
     |---|---|
-    | `office` | 회사원 |
-    | `doctor` | 의사 |
-    | `chef` | 요리사 |
-    | `firefighter` | 소방관 |
-    | `teacher` | 교사 |
-    | `programmer` | 프로그래머 |
-    | `farmer` | 농부 |
-    | `builder` | 건설노동자 |
+    | `banker` | 월스트리트 금융인 |
+    | `taxi` | 옐로캡 택시기사 |
+    | `police` | NYPD 경찰관 |
+    | `firefighter` | FDNY 소방관 |
+    | `broadway` | 브로드웨이 배우 |
+    | `hotdog` | 핫도그 노점상 |
+    | `builder` | 고층빌딩 건설노동자 |
+    | `designer` | 패션 디자이너 |
+
+  - 아바타는 **팀당 하나**이고, 팀장(`m1`, 명단의 첫 팀원)만 고른다.
+  - 한 팀이 고른 아바타(`{gender}_{job}`)는 다른 팀이 고를 수 없다.
+  - 팀장은 lobby 동안 아바타를 바꿀 수 있다. 게임을 시작할 때 아바타가 없는 팀에는 남은 아바타를 무작위로 배정한다.
+  - `buildStartGame`은 팀원을 빈칸 없이 `m1`부터 다시 번호 매긴다(첫 입력 팀원 = `m1` = 팀장).
 
 - **문항 입력값 범위:**
   - 제한 시간: 5~300초, 정수
@@ -125,7 +130,9 @@ teachers/{uid}/activeGame: code | null
 teachers/{uid}/keys/{code}: { questions: Question[] }             // 정답 포함, 교사만
 games/{code}/meta: { teacherUid, status: "lobby"|"playing"|"ended", startMoney, questionCount, createdAt }
 games/{code}/teams/{t}: { name, members: {m: name} }
-games/{code}/seats/{t}/{m}: { uid, gender, job }
+games/{code}/seats/{t}/{m}: { uid }
+games/{code}/teamAvatar/{t}: { gender, job }                        // 팀 아바타 (모두 읽기, 팀장·교사 쓰기)
+games/{code}/avatarClaims/{gender_job}: t                          // 선점 표시 (모두 읽기)
 games/{code}/uidSeat/{uid}: { t, m }
 games/{code}/presence/{t}/{m}: { online: bool, lastChanged: number }
 games/{code}/balances/{t}: number
@@ -599,10 +606,10 @@ Run: `npm run test:rules` → Expected: 모두 PASS
   - **대기방**
     - 왼쪽에 큰 QR(500px 이상)과 입장 코드, 그리고 짧은 주소를 둔다.
     - 오른쪽에 7팀 카드를 둔다.
-      - 팀원마다 입장하면 아바타(`tier = 2`로 표시)와 ✅, 미입장이면 회색 ⬜과 이름을 보여 준다.
+      - 팀 카드 위에 팀 아바타(`teamAvatar`, 없으면 "팀장 선택 중" 실루엣)를 보여 준다. 팀원마다 입장하면 ✅ 이름, 미입장이면 회색 ⬜ 이름을 보여 준다. 팀장 이름 옆에 👑를 단다.
       - 자리 옆 작은 "풀기" 버튼은 확인 창을 띄운 뒤 `seats/{t}/{m}`와 `uidSeat/{uid}`를 삭제한다.
     - 상단에 "입장 12 / 21명"을 표시한다.
-    - **게임 시작** 버튼은 `meta/status = "playing"`으로 바꾼다. 미입장이 있으면 "아직 3명이 들어오지 않았어요. 시작할까요?" 확인 창을 띄운다.
+    - **게임 시작** 버튼은 `update(ref(db), buildStartPlaying(...))`을 실행한다(Task 13: 상태를 playing으로 바꾸고, 아바타 없는 팀에 무작위 배정). 미입장이 있으면 "아직 3명이 들어오지 않았어요. 시작할까요?" 확인 창을 띄운다.
   - **효과음 버튼:** 화면 구석에 음소거 토글을 둔다.
 
 - [ ] **Step 2: 확인**
@@ -636,7 +643,10 @@ Run: `npm run test:rules` → Expected: 모두 PASS
   - **이름 선택:** 차 있는 이름은 회색으로 비활성화한다.
     - 이름을 누르면 `runTransaction(seats/{t}/{m})`으로 빈 자리일 때만 차지하고, 그다음 `uidSeat`을 쓴다.
     - 실패하면 "이미 선택된 이름이에요"를 띄운다.
-  - **아바타 선택:** 성별 2개 × 직업 8개를 고르고, 미리보기는 `tier 2`로 보여 준다. "입장하기"를 누르면 `seats`에 `gender`, `job`을 저장한다.
+  - **아바타 선택 (Task 13 개정):** 팀장(`m == "m1"`)에게만 16종 격자를 보여 준다. 미리보기는 `tier 2`로 한다.
+    - `avatarClaims`를 구독해서, 다른 팀이 가진 것은 회색과 "○팀 선택"으로 잠근다.
+    - 하나를 누르면 `update(ref(db), buildClaimAvatar(...))`를 실행한다. 거부되면 "방금 다른 팀이 골랐어요"를 띄운다.
+    - 팀장이 아닌 팀원은 `teamAvatar/{t}`를 구독해서 "팀장이 아바타를 고르고 있어요" 또는 정해진 아바타를 본다.
   - **대기 화면:** "선생님이 시작할 때까지 기다리세요"와 내 아바타를 보여 준다.
   - **상단 고정 바:** 게임이 시작된 뒤에는 항상 보인다. 내 아바타(현재 단계), 팀명, **우리 팀 잔액**(`formatMoney`; 부채면 빨간 배경)을 보여 준다.
   - `.info/connected`가 true가 될 때마다 presence를 다시 쓴다.
@@ -835,3 +845,75 @@ Run: `npm run test:rules` → Expected: 모두 PASS
 7. 게임을 종료한다.
 
 - [ ] **Step 4: Commit** `docs: 배포와 수업 당일 안내`
+
+---
+
+### Task 13: 개정 — 뉴욕 직업 아바타와 팀 아바타 선점 (Task 6보다 먼저 실행)
+
+**Files:**
+- Modify: `js/avatars/avatars.js`, `tests/avatars.test.js`, `js/logic/quizModel.js`, `js/logic/updates.js`, `tests/updates.test.js`, `tests/quizModel.test.js`, `database.rules.json`, `tests/rules/rules.test.js`
+
+**Interfaces:**
+- Produces:
+  - `JOBS`는 Global Constraints의 뉴욕 8종이다. 알 수 없는 job은 `banker`로 그린다.
+  - `avatarKey(gender, job): string` = `${gender}_${job}` (`js/avatars/avatars.js`)
+  - `ALL_AVATARS: Array<{gender, job}>` 16종 (f 먼저, JOBS 순서)
+  - `filledMembers(team)`는 채워진 칸만 `m1`부터 **다시 번호 매겨** 돌려준다.
+  - `buildClaimAvatar({ code, t, gender, job, previous }): object`
+    - `games/{code}/avatarClaims/{key} = t`
+    - `games/{code}/teamAvatar/{t} = {gender, job}`
+    - `previous`가 있고 새 key와 다르면 `games/{code}/avatarClaims/{previousKey} = null`
+  - `buildStartPlaying({ code, teams, teamAvatar, claims, rand = Math.random }): object`
+    - `games/{code}/meta/status = "playing"`
+    - 아바타 없는 팀마다 `claims`에 없는 아바타 하나를 무작위로 골라 `teamAvatar/{t}`와 `avatarClaims/{key}`를 쓴다.
+- 규칙 추가:
+  - `teamAvatar`, `avatarClaims`: 로그인한 사람은 누구나 읽는다.
+  - `teamAvatar/$t` 쓰기 조건:
+    - 내가 그 팀 팀장: `uidSeat/{auth.uid}`가 `{t:$t, m:"m1"}`
+    - `meta/status == "lobby"`
+    - 새 값의 key에 해당하는 `avatarClaims`가 (새 데이터 기준) `$t`
+  - `avatarClaims/$key` 쓰기 조건 (`meta/status == "lobby"`이고 내가 팀장일 때만):
+    - 새로 만들 때: `!data.exists()`이고, 값이 내 팀이어야 한다.
+    - 지울 때: 기존 값이 내 팀이어야 한다.
+  - 학생은 `seats`에 `uid`만 쓴다(`gender`, `job` 필드는 없앤다).
+
+- [ ] **Step 1: 실패하는 테스트**
+  - `JOBS` ID 목록이 `["banker","taxi","police","firefighter","broadway","hotdog","builder","designer"]`이다.
+  - `ALL_AVATARS.length === 16`이다.
+  - 알 수 없는 job → `data-job="banker"`
+  - `filledMembers({members:{m1:"",m2:"가",m3:"",m4:"나",m5:""}})` → `{m1:"가", m2:"나"}`
+  - `buildClaimAvatar({code:"C",t:"t2",gender:"f",job:"taxi",previous:{gender:"m",job:"police"}})`는 다음 세 경로를 포함한다.
+    - `games/C/avatarClaims/f_taxi: "t2"`
+    - `games/C/teamAvatar/t2: {gender:"f",job:"taxi"}`
+    - `games/C/avatarClaims/m_police: null`
+  - `buildStartPlaying`: t1은 이미 `f_banker`이고 t2·t3은 아바타가 없을 때를 확인한다.
+    - t2와 t3이 서로 다르고 `f_banker`도 아닌 아바타를 받는다.
+    - `meta/status`가 `"playing"`이 된다.
+  - 규칙 테스트:
+
+    | 경우 | 기대 결과 |
+    |---|---|
+    | 팀장이 빈 아바타 선점 | 허용 |
+    | 다른 팀이 가진 아바타 선점 | 거부 |
+    | 팀장이 아닌 팀원이 선점 | 거부 |
+    | `playing` 상태에서 선점 | 거부 |
+    | 팀장이 자기 팀 이전 선점 해제 | 허용 |
+    | 다른 팀 선점 삭제 | 거부 |
+
+- [ ] **Step 2: Run** `npx vitest run` → FAIL. `npm run test:rules` → 새 규칙 테스트 FAIL.
+- [ ] **Step 3: 구현.** 아바타 그림은 뉴욕 직업 8종으로 다시 그린다.
+
+  | 직업 | 그림 |
+  |---|---|
+  | 금융인 | 남색 정장, 넥타이, 서류가방 |
+  | 택시기사 | 노란 체크무늬 띠 조끼, 납작 모자, TAXI 표시 |
+  | 경찰관 | 진청 제복, 경찰모, 배지 |
+  | 소방관 | FDNY 빨간 헬멧, 반사띠 |
+  | 브로드웨이 배우 | 반짝이 보라 의상, 헤드셋 마이크, 별 |
+  | 핫도그 노점상 | 줄무늬 앞치마, 핫도그 |
+  | 건설노동자 | 노란 안전모, 형광 조끼 |
+  | 패션 디자이너 | 베레모, 검정 터틀넥, 목에 건 줄자 |
+
+  재산 단계 레이어는 그대로 쓴다.
+- [ ] **Step 4: Run** 두 테스트를 모두 PASS로 만든다. `avatars-preview.html`에서 16종 × 5단계를 눈으로 확인한다.
+- [ ] **Step 5: Commit** `feat: 뉴욕 직업 아바타와 팀 아바타 선점`
