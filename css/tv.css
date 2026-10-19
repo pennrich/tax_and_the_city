@@ -1,0 +1,38 @@
+/* 교사 화면(TV): 교실 뒷자리에서도 읽히는 크기. 1920×1080 기준, 작은 화면에서는 줄어든다. */
+body.tv { min-height: 100vh; overflow-x: hidden; }
+
+.center { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 24px; text-align: center; }
+.logo { font-size: clamp(40px, 5vw, 96px); margin: 0; color: var(--taxi); text-shadow: 0 4px 0 #000; }
+.big { font-size: clamp(22px, 2vw, 34px); padding: 18px 36px; min-height: 72px; }
+
+.game-cards { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; max-width: 1400px; }
+.game-card { font-size: clamp(22px, 2.2vw, 36px); padding: 28px 40px; min-width: 320px; background: #fff; color: var(--ink); box-shadow: 0 6px 0 var(--taxi); }
+
+.mute { position: fixed; right: 16px; bottom: 16px; z-index: 40; min-height: 56px; width: 56px; padding: 0; font-size: 26px; background: var(--night-3); color: #fff; box-shadow: none; }
+
+/* 대기방 */
+.lobby { display: grid; grid-template-columns: minmax(300px, 30%) 1fr; gap: 24px; padding: 20px 24px; height: 100vh; }
+.join { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.join .title { font-size: clamp(20px, 1.8vw, 32px); margin: 0; color: #fff; }
+.join #qr svg { width: min(420px, 26vw, 52vh); height: auto; }
+.join .code { font-size: clamp(22px, 2vw, 34px); margin: 8px 0 0; }
+.join .code b { font-family: var(--display); color: var(--taxi); font-size: 1.6em; letter-spacing: 6px; }
+.join .url { font-size: 14px; color: var(--muted); word-break: break-all; margin: 0; }
+
+.teams-side { display: flex; flex-direction: column; gap: 12px; min-width: 0; min-height: 0; }
+.lobby-head { display: flex; align-items: baseline; justify-content: space-between; }
+.lobby-head h2 { margin: 0; font-size: clamp(28px, 2.6vw, 48px); }
+.count { font-size: clamp(22px, 2vw, 36px); font-weight: 900; color: var(--taxi); }
+.team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; overflow: auto; min-height: 0; }
+.team-card { display: flex; gap: 10px; background: var(--night-2); border-radius: var(--radius); padding: 10px; border: 2px solid var(--night-3); }
+.team-card h3 { margin: 0 0 2px; font-size: clamp(20px, 1.6vw, 28px); color: var(--taxi); }
+.team-card ul { list-style: none; margin: 0; padding: 0; font-size: clamp(15px, 1.1vw, 20px); line-height: 1.45; }
+.team-card li.out { color: var(--muted); }
+.team-card li.away { color: var(--warn); }
+.team-card .release { min-height: 0; padding: 2px 8px; font-size: 13px; margin-left: 6px; background: transparent; color: var(--muted); border: 1px solid var(--muted); box-shadow: none; }
+.av-empty { width: 72px; height: 72px; border-radius: 50%; border: 3px dashed var(--muted); color: var(--muted); display: flex; align-items: center; justify-content: center; text-align: center; font-size: 14px; flex: none; }
+.start-row { display: flex; justify-content: flex-end; margin-top: auto; }
+
+@media (max-width: 900px) {
+  .lobby { grid-template-columns: 1fr; height: auto; }
+}
