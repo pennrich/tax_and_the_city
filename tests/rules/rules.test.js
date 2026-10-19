@@ -108,6 +108,10 @@ describe("answers", () => {
     await assertFails(set(ref(db("S1"), `${G}/answers/2/t1/m1`), { value: 1, at: 1 }));
   });
 
+  it("lets a student read back their own answer before reveal", async () => {
+    await assertSucceeds(get(ref(db("S1"), `${G}/answers/1/t1/m1`)));
+  });
+
   it("hides teammates' answers before reveal", async () => {
     await assertFails(get(ref(db("S2"), `${G}/answers/1/t1`)));
   });
@@ -126,6 +130,12 @@ describe("answers", () => {
 describe("coop pieces", () => {
   it("lets a student read their own piece", async () => {
     await assertSucceeds(get(ref(db("S1"), `${G}/pieces/3/t1/m1`)));
+  });
+
+  it("lets a teammate read the team's piece count", async () => {
+    await env.withSecurityRulesDisabled((ctx) => set(ref(ctx.database(), `${G}/pieceCount/3/t1`), 2));
+    await assertSucceeds(get(ref(db("S2"), `${G}/pieceCount/3/t1`)));
+    await assertFails(get(ref(db("S3"), `${G}/pieceCount/3/t1`)));
   });
 
   it("hides a teammate's piece before reveal", async () => {

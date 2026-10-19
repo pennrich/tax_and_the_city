@@ -39,3 +39,34 @@ main { padding: 20px 16px 40px; max-width: 1100px; margin: 0 auto; }
 .avatar-pick.locked { opacity: .35; filter: grayscale(1); }
 .avatar-pick .lock { font-size: 13px; color: var(--warn); }
 .big-avatar svg { width: min(240px, 50vw); height: auto; }
+
+/* 문제 풀기 */
+.question { align-items: stretch; text-align: left; }
+.q-head { display: flex; justify-content: space-between; align-items: center; }
+.q-no { font-family: var(--display); font-size: 26px; color: var(--taxi); }
+.timer { font-size: 28px; font-weight: 900; }
+.question .q-text { font-size: clamp(24px, 4vw, 36px); font-weight: 900; line-height: 1.35; }
+.answer-choices { display: grid; gap: 12px; }
+.pick { text-align: left; min-height: 72px; font-size: clamp(22px, 3.4vw, 30px); background: #fff; box-shadow: 0 4px 0 #9aa3b8; }
+.pick span { color: #2c4673; margin-right: 6px; }
+.pick.on { background: var(--taxi); box-shadow: 0 4px 0 var(--taxi-dark); outline: 4px solid #fff; }
+.text-answer { font-size: 30px; padding: 16px; width: 100%; }
+.submit { min-height: 80px; font-size: 30px; }
+.piece { background: rgba(255, 255, 255, .08); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.piece-text { font-size: clamp(26px, 4.4vw, 40px); font-weight: 900; color: var(--taxi); text-align: center; }
+.piece p { text-align: center; }
+.nums { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.num { min-width: 80px; min-height: 80px; font-size: 36px; font-family: var(--display); background: #fff; box-shadow: 0 4px 0 #9aa3b8; }
+.num.on { background: var(--taxi); outline: 4px solid #fff; }
+
+/* 결과 */
+.reveal-answer { font-size: clamp(24px, 4vw, 36px); font-weight: 900; background: rgba(0, 0, 0, .25); border-radius: 14px; padding: 10px 18px; }
+.reveal-answer span { color: var(--taxi); margin-right: 8px; }
+.celebrate h1 { animation: pop .6s cubic-bezier(.2, 1.6, .4, 1) both; }
+.coins { font-size: 64px; animation: pop .8s .3s both; }
+@keyframes pop { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.team-table { width: 100%; border-collapse: collapse; font-size: clamp(18px, 2.8vw, 24px); background: rgba(0, 0, 0, .25); border-radius: 12px; overflow: hidden; }
+.team-table th, .team-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, .15); text-align: left; }
+.team-table th { color: var(--taxi); }
+.final-money { font-size: clamp(32px, 6vw, 56px) !important; font-weight: 900; }
+.team-table tr.absent td { color: #aab; }

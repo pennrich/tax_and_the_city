@@ -72,7 +72,11 @@ export function buildReveal({ code, q, question, teams, answers = {}, presence =
   const g = `games/${code}`;
   const coop = question.type === "coop";
   const updates = {
-    [`${g}/reveal/${q}`]: { answerText: answerText(question) },
+    [`${g}/reveal/${q}`]: {
+      answerText: answerText(question),
+      answer: question.type === "choice" ? question.answer : null,
+      accepted: question.type === "text" ? parseAccepted(question.acceptedRaw) : null,
+    },
     [`${g}/current/phase`]: "revealed",
   };
   const results = {};

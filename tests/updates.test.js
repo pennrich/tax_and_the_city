@@ -75,7 +75,7 @@ describe("buildReveal", () => {
     expect(r.updates[`games/${CODE}/results/2/t2`]).toEqual({ outcome: "wrong", delta: -500, balance: -300, tier: 5 });
     expect(r.updates[`games/${CODE}/balances/t2`]).toBe(-300);
     expect(r.results.t3).toEqual({ outcome: "none", delta: 0, balance: 10000, tier: 2 });
-    expect(r.updates[`games/${CODE}/reveal/2`]).toEqual({ answerText: "② b" });
+    expect(r.updates[`games/${CODE}/reveal/2`]).toEqual({ answerText: "② b", answer: 1, accepted: null });
     expect(r.updates[`games/${CODE}/current/phase`]).toBe("revealed");
   });
 
@@ -94,6 +94,14 @@ describe("buildReveal", () => {
     });
     expect(r.results.t1.outcome).toBe("correct");
     expect(r.updates[`games/${CODE}/results/3/t1`].key).toEqual({ m1: [2], m2: [1] });
+  });
+});
+
+describe("reveal payload", () => {
+  it("carries the accepted answers for a text question", () => {
+    const tq = { type: "text", text: "Q", acceptedRaw: "부가가치세, 부가세", reward: 1, tax: 1, seconds: 5 };
+    const r = buildReveal({ code: CODE, q: 0, question: tq, teams: {}, startMoney: 0, now: 0, alreadyRevealed: false, answers: {}, presence: {}, balances: {} });
+    expect(r.updates[`games/${CODE}/reveal/0`]).toEqual({ answerText: "부가가치세 / 부가세", answer: null, accepted: ["부가가치세", "부가세"] });
   });
 });
 

@@ -99,6 +99,7 @@
             "$t": {
               ".read": "auth != null && root.child('games/' + $code + '/uidSeat/' + auth.uid + '/t').val() === $t && root.child('games/' + $code + '/reveal/' + $q).exists()",
               "$m": {
+                ".read": "auth != null && root.child('games/' + $code + '/seats/' + $t + '/' + $m + '/uid').val() === auth.uid",
                 ".write": "auth != null && !data.exists() && newData.exists() && root.child('games/' + $code + '/seats/' + $t + '/' + $m + '/uid').val() === auth.uid && root.child('games/' + $code + '/current/q').val() + '' === $q && root.child('games/' + $code + '/current/phase').val() === 'open' && now <= root.child('games/' + $code + '/current/endsAt').val() + 1500",
                 ".validate": "newData.hasChildren(['value', 'at'])"
               }

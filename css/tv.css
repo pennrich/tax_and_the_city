@@ -36,3 +36,91 @@ body.tv { min-height: 100vh; overflow-x: hidden; }
 @media (max-width: 900px) {
   .lobby { grid-template-columns: 1fr; height: auto; }
 }
+
+/* 진행 화면 */
+button.small { min-height: 44px; padding: 8px 16px; font-size: 16px; }
+.play { display: grid; grid-template-columns: 1fr minmax(280px, 26%); gap: 18px; height: 100vh; padding: 16px; }
+.play-main { display: flex; flex-direction: column; gap: 14px; min-width: 0; min-height: 0; }
+.qnums { display: flex; flex-wrap: wrap; gap: 8px; }
+.qn { min-height: 52px; min-width: 64px; padding: 8px 14px; font-size: 22px; font-family: var(--display); }
+.qn.done { background: var(--night-3); color: var(--muted); box-shadow: none; }
+.qn.active { outline: 4px solid #fff; }
+.stage { flex: 1; min-height: 0; background: var(--night-2); border-radius: 22px; padding: clamp(16px, 2.4vw, 40px); display: flex; overflow: hidden; position: relative; }
+.stage > div { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.stage-idle { align-items: center; justify-content: center; text-align: center; }
+.stage-idle h1 { font-size: clamp(32px, 3.6vw, 64px); margin: 0; color: var(--taxi); }
+.stage-idle p { font-size: clamp(20px, 2vw, 32px); color: var(--muted); }
+.play-foot { display: flex; justify-content: space-between; gap: 10px; padding-right: 72px; }
+
+.q-label { font-family: var(--display); font-size: clamp(22px, 2vw, 36px); color: var(--taxi); }
+.q-text { font-size: clamp(36px, 3.6vw, 72px); font-weight: 900; line-height: 1.25; margin: 10px 0 18px; word-break: keep-all; }
+.q-open.coop .q-text { color: var(--taxi); }
+.tv-choices { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tv-choices li { background: var(--night-3); border-radius: 14px; padding: 14px 20px; font-size: clamp(26px, 2.4vw, 46px); font-weight: 700; }
+.tv-choices li span { color: var(--taxi); margin-right: 8px; }
+.tv-hint { font-size: clamp(24px, 2.2vw, 40px); color: #c9cfdf; }
+.q-bottom { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.clock { font-family: var(--display); font-size: clamp(90px, 9vw, 180px); line-height: 1; color: #fff; min-width: 2ch; }
+.clock.hurry { color: var(--tax); animation: pulse .5s infinite alternate; }
+.clock.over { color: var(--warn); font-size: clamp(60px, 6vw, 120px); }
+#reveal.pulse { animation: pulse .6s infinite alternate; }
+@keyframes pulse { from { transform: scale(1); } to { transform: scale(1.08); } }
+
+/* 순위 패널 */
+.rank { background: var(--night-2); border-radius: 22px; padding: 10px; overflow: auto; display: flex; flex-direction: column; gap: 6px; }
+.rank h2 { margin: 0; font-size: clamp(20px, 2vw, 28px); color: var(--taxi); }
+.rank-row { display: grid; grid-template-columns: 40px 48px 1fr; gap: 8px; align-items: center; background: var(--night-3); border-radius: 12px; padding: 4px 8px; flex: 1 1 0; min-height: 0; max-height: 120px; }
+.rank-row svg { width: 48px; height: 48px; }
+.rank-row.tier5 { background: #4a1d1d; }
+.rank-row.tier1 { background: #4a3d0d; }
+.rk { font-family: var(--display); font-size: 30px; text-align: center; }
+.rk .up { color: var(--money); font-size: 18px; } .rk .down { color: var(--tax); font-size: 18px; }
+.rname { font-weight: 900; font-size: clamp(16px, 1.3vw, 22px); }
+.rmoney { font-size: clamp(18px, 1.5vw, 26px); font-weight: 900; color: #b6f5cf; }
+.rmoney.debt { color: #ff9b97; }
+.sub { font-size: 14px; color: var(--taxi); }
+.away { font-size: 13px; background: var(--warn); color: var(--ink); border-radius: 8px; padding: 2px 6px; margin-top: 2px; font-weight: 700; }
+
+/* 정답 공개 */
+.q-revealed .answer { font-family: var(--display); font-size: clamp(56px, 6vw, 130px); color: var(--taxi); text-align: center; margin: 6px 0 16px; animation: zoomIn .6s cubic-bezier(.2, 1.6, .4, 1) both; word-break: keep-all; }
+.res-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.res { display: flex; align-items: center; gap: 12px; border-radius: 16px; padding: 10px 14px; animation: flipIn .5s both; }
+.res.correct { background: var(--money); }
+.res.wrong { background: var(--tax); }
+.res.none { background: var(--night-3); color: var(--muted); }
+.res-name { font-weight: 900; font-size: 24px; }
+.res-label { font-size: clamp(22px, 1.9vw, 32px); font-weight: 900; }
+.res.wrong .res-label { animation: stamp .4s .2s both; animation-delay: inherit; }
+.res.tier-change .res-av { animation: morph 1s 2.2s both; }
+.stage.static .answer, .stage.static .res, .stage.static .res-av { animation: none !important; }
+@keyframes zoomIn { from { transform: scale(.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes flipIn { from { transform: rotateX(90deg); opacity: 0; } to { transform: rotateX(0); opacity: 1; } }
+@keyframes stamp { 0% { transform: scale(2.4) rotate(-12deg); opacity: 0; } 70% { transform: scale(.9) rotate(-4deg); opacity: 1; } 100% { transform: scale(1) rotate(-4deg); } }
+@keyframes morph { 0% { transform: rotate(0); filter: brightness(1); } 40% { transform: rotate(360deg) scale(1.3); filter: brightness(2.5); } 100% { transform: rotate(720deg) scale(1); filter: brightness(1); } }
+.res.correct::after { content: "🪙🪙🪙"; position: absolute; animation: coinfall 1.2s both; animation-delay: inherit; }
+.res { position: relative; overflow: visible; }
+@keyframes coinfall { from { transform: translateY(-60px); opacity: 1; } to { transform: translateY(40px); opacity: 0; } }
+.final-cta { position: absolute; right: 24px; bottom: 24px; }
+
+/* QR 보기 */
+.qr-box { background: var(--night-2); border-radius: 24px; padding: 28px; text-align: center; }
+.qr-box #qr-big svg { width: min(420px, 60vh); height: auto; }
+.qr-box .code { font-size: 30px; }
+.qr-box .code b { font-family: var(--display); color: var(--taxi); letter-spacing: 6px; font-size: 1.5em; }
+
+/* 시상식 */
+.ceremony { min-height: 100vh; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px; position: relative; overflow: hidden; }
+.podium { display: flex; align-items: flex-end; gap: 24px; }
+.podium-item, .others .podium-item { display: flex; flex-direction: column; align-items: center; background: var(--night-2); border-radius: 18px; padding: 14px 20px; animation: rise .8s both; }
+.podium .place1 { order: 2; background: #4a3d0d; padding-bottom: 60px; }
+.podium .place2 { order: 1; padding-bottom: 36px; }
+.podium .place3 { order: 3; padding-bottom: 16px; }
+.p-rank { font-family: var(--display); font-size: 40px; color: var(--taxi); }
+.p-name { font-size: 28px; font-weight: 900; }
+.p-money { font-size: 26px; font-weight: 900; }
+.p-money.debt { color: #ff9b97; }
+.others { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.others .p-rank { font-size: 28px; } .others .p-name { font-size: 20px; } .others .p-money { font-size: 20px; }
+@keyframes rise { from { transform: translateY(120px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.confetti i { position: absolute; top: -20px; width: 10px; height: 16px; animation: fall 3.2s linear infinite; }
+@keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }

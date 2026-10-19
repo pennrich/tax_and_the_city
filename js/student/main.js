@@ -76,6 +76,8 @@ function start() {
     listen("seats", `${g}/seats`, (v) => (S.seats = v ?? {}));
     listen("teamAvatar", `${g}/teamAvatar`, (v) => (S.teamAvatar = v ?? {}));
     listen("claims", `${g}/avatarClaims`, (v) => (S.claims = v ?? {}));
+    listen("current", `${g}/current`, (v) => (S.current = v));
+    setInterval(render, 500); // 남은 시간 표시·마감 전환
     listen("uidSeat", `${g}/uidSeat/${S.uid}`, (v) => {
       S.mySeat = v;
       if (v) {
@@ -262,4 +264,4 @@ function waitView() {
   };
 }
 
-export { render, code };
+export { render, code, listen };
