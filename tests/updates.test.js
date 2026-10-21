@@ -29,7 +29,7 @@ describe("buildStartGame", () => {
 describe("buildOpenQuestion", () => {
   it("publishes the question without the answer", () => {
     const u = buildOpenQuestion({ code: CODE, uid: "U", q: 2, question: CHOICE, serverNow: 1000, present: {} });
-    expect(u.updates[`games/${CODE}/current`]).toEqual({ q: 2, text: "Q", type: "choice", choices: ["a", "b"], endsAt: 31000, phase: "open" });
+    expect(u.updates[`games/${CODE}/current`]).toEqual({ q: 2, text: "Q", type: "choice", choices: ["a", "b"], reward: 1000, tax: 500, endsAt: 31000, phase: "open" });
     expect(u.updates[`games/${CODE}/played/2`]).toBe(true);
     expect(JSON.stringify(u.updates)).not.toContain("answer");
     expect(JSON.stringify(u.updates)).not.toContain("accepted");

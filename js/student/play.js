@@ -4,7 +4,7 @@ import { isCorrect } from "../logic/grading.js";
 import { formatMoney } from "../logic/money.js";
 import { wealthTier } from "../logic/tier.js";
 import { renderAvatar } from "../avatars/avatars.js";
-import { esc, $, $$, toast } from "../ui/dom.js";
+import { esc, $, $$, toast, stakesHtml } from "../ui/dom.js";
 import { listen, render, code } from "./main.js";
 
 const CIRCLED = ["①", "②", "③", "④", "⑤"];
@@ -106,6 +106,7 @@ function formView(S, cur, pieces) {
     mood: "question",
     html: `<section class="screen question">
       <div class="q-head"><span class="q-no">${cur.q + 1}번${cur.type === "coop" ? " · 협력" : ""}</span><span id="timer" class="timer">${timerText(cur)}</span></div>
+      ${stakesHtml(cur)}
       <div class="q-text">${esc(cur.text)}</div>
       ${body}
       <button id="submit" class="submit" ${ready ? "" : "disabled"}>제출</button></section>`,

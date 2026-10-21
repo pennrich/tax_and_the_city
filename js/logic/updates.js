@@ -40,6 +40,8 @@ export function buildOpenQuestion({ code, uid, q, question, serverNow, present =
       text: coop ? COOP_PROMPT : question.text,
       type: question.type,
       choices: question.type === "choice" ? question.choices : null,
+      reward: question.reward,
+      tax: question.tax,
       endsAt: serverNow + question.seconds * 1000,
       phase: "open",
     },

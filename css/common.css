@@ -75,3 +75,9 @@ input:focus, select:focus, textarea:focus { outline: 3px solid var(--taxi); outl
     var(--night);
 }
 .statue { cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+
+/* 문항에 걸린 상금·세금 (교사 TV, 학생 화면) */
+.stakes { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.stake { display: inline-flex; align-items: center; padding: 6px 14px; border-radius: 999px; color: #fff; font-weight: 900; font-size: 20px; white-space: nowrap; }
+.stake.reward { background: var(--money-dark); }
+.stake.tax { background: var(--tax-dark); }

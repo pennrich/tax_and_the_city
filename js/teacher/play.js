@@ -8,7 +8,7 @@ import { wealthTier } from "../logic/tier.js";
 import { renderAvatar } from "../avatars/avatars.js";
 import { renderQR, joinUrl } from "../ui/qr.js";
 import { sound } from "../sound.js";
-import { esc, $, $$, toast } from "../ui/dom.js";
+import { esc, $, $$, toast, stakesHtml } from "../ui/dom.js";
 import { endGame, maybeAutoEnd } from "./end.js";
 
 const CIRCLED = ["①", "②", "③", "④", "⑤"];
@@ -125,6 +125,7 @@ function openStage(cur) {
         : `<p class="tv-hint">🧩 팀원들의 문장 조각을 맞춰 각자 몇 번째인지 누르세요</p>`;
   return `<div class="q-open ${cur.type}">
     <div class="q-label">${cur.q + 1}번 ${cur.type === "coop" ? "· 협력 문항" : ""}</div>
+    ${stakesHtml(cur)}
     <div class="q-text">${esc(cur.text)}</div>
     ${choices}
     <div class="q-bottom"><div id="clock" class="clock"></div><button id="reveal" class="big">정답 공개</button></div>

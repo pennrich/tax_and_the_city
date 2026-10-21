@@ -1,4 +1,5 @@
 // 화면 공통 도우미.
+import { formatMoney } from "../logic/money.js";
 
 export function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -23,6 +24,12 @@ export function toast(msg, ms = 2600) {
 
 export function newId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+// 문항에 걸린 상금·세금 표시(교사 TV와 학생 화면 공용). 금액이 없는 예전 게임이면 빈칸.
+export function stakesHtml(cur) {
+  if (cur.reward == null || cur.tax == null) return "";
+  return `<div class="stakes"><span class="stake reward">💰 맞히면 상금 ${formatMoney(cur.reward)}</span><span class="stake tax">💸 틀리면 세금 ${formatMoney(cur.tax)}</span></div>`;
 }
 
 // 같은 사이트의 다른 페이지 주소. 에뮬레이터(?emu=1)로 보고 있으면 그대로 이어 간다.
