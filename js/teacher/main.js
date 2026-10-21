@@ -5,7 +5,7 @@ import { buildStartGame } from "../logic/updates.js";
 import { normalizeDraft, validateDraft } from "../logic/quizModel.js";
 import { makeGameCode } from "../logic/gameCode.js";
 import { sound } from "../sound.js";
-import { esc, $, $$, toast, bindStatueShortcut } from "../ui/dom.js";
+import { esc, $, $$, toast, bindStatueShortcut, pageHref } from "../ui/dom.js";
 import * as lobby from "./lobby.js";
 import * as play from "./play.js";
 import * as end from "./end.js";
@@ -46,7 +46,7 @@ function setupMute() {
 function showLogin() {
   current = "login";
   app.innerHTML = `<section class="center"><h1 class="logo"><span class="statue">🗽</span> Tax and the City</h1>
-    <button id="login" class="big">교사 로그인 (구글)</button></section>`;
+    <button id="login" class="big">교사 로그인 (구글)</button></section>${adminLink()}`;
   bindStatueShortcut(app);
   $("#login").onclick = () => signInTeacher().catch((e) => toast(`로그인 실패: ${e.code ?? e.message}`));
 }
@@ -65,10 +65,15 @@ function showList() {
       .join("");
     app.innerHTML = `<section class="center"><h1 class="logo"><span class="statue">🗽</span> Tax and the City</h1>
       <h2>오늘 할 게임을 고르세요</h2>
-      <div class="game-cards">${cards || "<p>준비된 게임이 없어요. 먼저 준비 페이지(admin.html)에서 게임을 만들어 주세요.</p>"}</div></section>`;
+      <div class="game-cards">${cards || "<p>준비된 게임이 없어요. 먼저 준비 페이지(admin.html)에서 게임을 만들어 주세요.</p>"}</div></section>${adminLink()}`;
     $$(".game-card").forEach((b) => (b.onclick = () => startGame(b.dataset.id)));
     bindStatueShortcut(app);
   });
+}
+
+// 준비 페이지로 가는 버튼. 게임 중(대기방·문항·결과)에는 TV에 띄우지 않고 로그인·게임 고르기 화면에만 둔다.
+function adminLink() {
+  return `<a class="to-admin" href="${pageHref("admin.html")}">🛠️ 게임 준비 페이지로</a>`;
 }
 
 async function startGame(draftId) {

@@ -2,7 +2,7 @@
 import { db, ref, set, remove, onValue, signInTeacher, onUser, signOutUser, showSetupNeededIfMissing } from "../firebase.js";
 import { blankDraft, blankQuestion, resizeQuestions, validateDraft, normalizeDraft, normalizeQuestion, TEAM_IDS, MEMBER_IDS } from "../logic/quizModel.js";
 import { wordsOf, splitSentence } from "../logic/coop.js";
-import { esc, $, $$, toast, newId } from "../ui/dom.js";
+import { esc, $, $$, toast, newId, pageHref } from "../ui/dom.js";
 
 const app = $("#app");
 const who = $("#who");
@@ -33,6 +33,12 @@ if (!showSetupNeededIfMissing()) {
     renderHome();
   });
 }
+
+// 교사 화면으로 가기. 게임을 고치던 중이면 저장 안 된 내용이 사라지니 먼저 묻는다.
+$("#to-teacher").href = pageHref("teacher.html");
+$("#to-teacher").onclick = (e) => {
+  if (draft && !confirm("저장하지 않은 내용은 사라져요. 교사 화면으로 갈까요?")) e.preventDefault();
+};
 
 who.addEventListener("click", (e) => {
   if (e.target.id === "logout") signOutUser();

@@ -124,3 +124,12 @@ button.small { min-height: 44px; padding: 8px 16px; font-size: 16px; }
 @keyframes rise { from { transform: translateY(120px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .confetti i { position: absolute; top: -20px; width: 10px; height: 16px; animation: fall 3.2s linear infinite; }
 @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
+
+/* 로그인·게임 고르기 화면의 준비 페이지 이동 버튼 (게임 중에는 없음) */
+.to-admin {
+  position: fixed; left: 16px; bottom: 16px; z-index: 40;
+  display: inline-flex; align-items: center; min-height: 56px; padding: 0 18px;
+  border-radius: 14px; background: var(--night-3); color: #fff;
+  font-size: 20px; font-weight: 700; text-decoration: none;
+}
+.to-admin:hover { background: var(--taxi); color: var(--night); }

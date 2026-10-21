@@ -25,6 +25,13 @@ export function newId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 
+// 같은 사이트의 다른 페이지 주소. 에뮬레이터(?emu=1)로 보고 있으면 그대로 이어 간다.
+export function pageHref(page) {
+  const url = new URL(page, location.href);
+  if (new URLSearchParams(location.search).get("emu") === "1") url.searchParams.set("emu", "1");
+  return url.toString();
+}
+
 // 🗽 로고를 두 번 톡톡 누르면 준비 페이지(admin.html)로 간다. 교사용 숨은 입구.
 // 안드로이드 크롬은 dblclick이 잘 안 오므로 두 번 탭을 직접 잰다.
 export function bindStatueShortcut(root = document) {
@@ -33,9 +40,7 @@ export function bindStatueShortcut(root = document) {
     el.addEventListener("pointerup", () => {
       const now = Date.now();
       if (now - last < 400) {
-        const url = new URL("admin.html", location.href);
-        if (new URLSearchParams(location.search).get("emu") === "1") url.searchParams.set("emu", "1");
-        location.href = url.toString();
+        location.href = pageHref("admin.html");
       }
       last = now;
     });
