@@ -122,7 +122,11 @@ function formView(S, cur, pieces) {
       const input = $("#text-answer");
       if (input) {
         input.oninput = () => (textDraft = input.value);
-        input.onkeydown = (e) => e.key === "Enter" && submit(S, cur);
+        // on* 핸들러가 false를 돌려주면 키가 취소된다(백스페이스·방향키가 막힘). 그래서 값을 돌려주지 않는다.
+        // 한글 조합 중 Enter는 글자 확정용이므로 제출하지 않는다.
+        input.onkeydown = (e) => {
+          if (e.key === "Enter" && !e.isComposing) submit(S, cur);
+        };
       }
       $("#submit").onclick = () => submit(S, cur);
     },
